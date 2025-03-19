@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const noReleased = () => {
     return Swal.fire({
         title: "Opa!",
-        text: "Esta função ainda não foi criada neste protótipo",
+        text: "Esta função ainda não foi criada neste protótipo. Assim que ela for, iremos notificá-lo!",
         icon: "warning",
         theme: "dark",
         confirmButtonText: "Ok!",
