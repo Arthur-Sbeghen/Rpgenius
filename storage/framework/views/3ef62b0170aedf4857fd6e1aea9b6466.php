@@ -1,0 +1,1 @@
+<h1>ola</h1><?php /**PATH C:\xampp\htdocs\ds-trab\resources\views/opa.blade.php ENDPATH**/ ?>
