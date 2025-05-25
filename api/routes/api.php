@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\MesaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProdutoController;
 
-Route::apiResource('produtos', ProdutoController::class);
+Route::get('mesas', [MesaController::class, 'index']);
+Route::get('mesas/{id}', [MesaController::class, 'show']);
