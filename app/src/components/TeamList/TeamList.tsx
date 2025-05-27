@@ -1,15 +1,21 @@
-'use client'
+"use client";
 
-import { List, Item } from './styles'
+import { List, Item } from "./styles";
 
-export function TeamList({ team }: { team: { id: number; name: string; role: string }[] }) {
+interface Member {
+  id: number;
+  name: string;
+  role: string;
+}
+
+export function TeamList({ team }: { team: Member[] }) {
   return (
     <List>
-      {team.map(member => (
+      {team.map((member) => (
         <Item key={member.id}>
           <strong>{member.name}</strong> – {member.role}
         </Item>
       ))}
     </List>
-  )
+  );
 }

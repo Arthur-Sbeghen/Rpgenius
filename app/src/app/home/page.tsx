@@ -11,24 +11,24 @@ export default function HomePage() {
   const [tables, setTables] = useState<Table[]>([]);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [isSidebarActive, setIsSidebarActive] = useState<boolean>(false);
+  const [loadingTables, setLoadingTables] = useState<boolean>(true);
 
   // Busca as mesas com axios pelo endpoint '/api/tables' quando o DOM
   // é renderizado e armazena os dados no estado 'tables'
   useEffect(() => {
     fetch("/api/tables")
       .then((res) => res.json())
-      .then((data) => {
-        setTables(data);
-      })
+      .then((data) => setTables(data))
       .catch((error) => {
-        console.log(error);
+        console.log("erro:", error);
         Swal.fire({
           icon: "error",
           theme: "dark",
           title: "Erro",
           text: "Não foi possível carregar as mesas.",
         });
-      });
+      })
+      .finally(() => setLoadingTables(false));
   }, []);
 
   // Função que dispara modal dizendo que a funcionalidade ainda não está disponível
@@ -43,7 +43,7 @@ export default function HomePage() {
     });
   };
 
-  const selectedTable = tables.find((t) => t.id === selectedTableId);
+  const selectedTable = tables?.find((t) => t.id === selectedTableId);
 
   return (
     <>
@@ -93,30 +93,36 @@ export default function HomePage() {
               <button onClick={noReleased}>Juntar-se à mesas</button>
             </div>
             <div className="rpgTables">
-              {tables.map((table) => (
-                <div
-                  className="table"
-                  /* Necessário no React */
-                  key={table.id}
-                  /* Adiciona o id da mesa desta div no estado selectedTableId, 
+              {loadingTables ? (
+                <p>
+                  <b>Carregando Mesas...</b>
+                </p>
+              ) : (
+                tables.map((table) => (
+                  <div
+                    className="table"
+                    /* Necessário no React */
+                    key={table.id}
+                    /* Adiciona o id da mesa desta div no estado selectedTableId, 
                   que depois será buscada pela função selectedTable e mudará o 
                   conteúdo da <main> automaticamente pcausa do tenário '!selectedTable ? (' */
-                  onClick={() => setSelectedTableId(table.id)}
-                >
-                  <div className="tableName">{table.table}</div>
-                  <div className="tableSystem">{table.system}</div>
-                  <div className="tablePlayers">
-                    {/* Exemplo de CSS inline */}
-                    <span style={{ fontWeight: "bold" }}>
-                      {table.players.length === 0
-                        ? "Sem Jogadores"
-                        : `${table.players.length} Jogador${
-                            table.players.length > 1 ? "es" : ""
-                          }`}
-                    </span>
+                    onClick={() => setSelectedTableId(table.id)}
+                  >
+                    <div className="tableName">{table.table}</div>
+                    <div className="tableSystem">{table.system}</div>
+                    <div className="tablePlayers">
+                      {/* Exemplo de CSS inline */}
+                      <span style={{ fontWeight: "bold" }}>
+                        {table.players.length === 0
+                          ? "Sem Jogadores"
+                          : `${table.players.length} Jogador${
+                              table.players.length > 1 ? "es" : ""
+                            }`}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </>
         ) : (
@@ -124,28 +130,28 @@ export default function HomePage() {
           <>
             <div className="placeReturn">
               <i
-                /* Recarrega a <main> como menu */
+                /* Recarrega a <main> como menu, flechinha de return */
                 onClick={() => setSelectedTableId(null)}
                 className="fa-solid fa-arrow-turn-up return"
               ></i>
             </div>
+            {/* Detalhes da mesa */}
             <h1>{selectedTable.table}</h1>
             <h4>{selectedTable.system}</h4>
+            {/* Status dos jogadores */}
             <div className="players-container">
               {selectedTable.players.map((player) => (
                 <div className="player" key={player.id}>
                   <h3>{player.name}</h3>
                   <div className="player-attributes">
-                    {Object.entries(selectedTable.attributes).map(
-                      ([attr, _], i) => (
-                        <div className="attribute" key={attr}>
-                          <p>
-                            <strong>{attr}:</strong>{" "}
-                            <span>{player.attributes[i]}</span>
-                          </p>
-                        </div>
-                      )
-                    )}
+                    {player.attributes.map((attribute, index) => (
+                      <div className="attribute" key={index}>
+                        <p>
+                          <strong>{attribute.name}:</strong>{" "}
+                          <span>{attribute.value}</span>
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
@@ -173,6 +179,7 @@ export default function HomePage() {
   );
 }
 
+// Copiado e colado do prototipo
 function rollDice(sides: number) {
   const resultDiv = document.getElementById("roll-results");
   const checkbox = document.getElementById(

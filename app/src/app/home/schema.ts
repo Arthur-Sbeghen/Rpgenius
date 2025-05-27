@@ -1,20 +1,24 @@
 export type AttributeName =
   | "Vida"
   | "Atletismo"
-  | "Força"
+  | "Forca"
   | "Intelecto"
   | "Sanidade";
+
+export type Attribute = {
+  name: AttributeName;
+  value: number;
+};
 
 export type Player = {
   id: number;
   name: string;
-  attributes: number[];
+  attributes: Attribute[]; // Array de types Attribute
 };
 
 export type Table = {
   id: number;
   table: string;
-  attributes: Record<AttributeName, string>;
   players: Player[];
   dice: number[];
   system: string;

@@ -1,11 +1,14 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
+// O 'List' no componente não é nada mais do que
+// uma 'ul' padrao do HTML mas com os estilos abaixo
 export const List = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 1rem;
 `;
 
+// Mesma coisa, so que agr eh uma 'li'
 export const Item = styled.li`
   padding: 1rem;
   border: 1px solid #ddd;

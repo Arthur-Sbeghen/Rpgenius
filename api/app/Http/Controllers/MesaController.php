@@ -10,30 +10,66 @@ class MesaController extends Controller {
         [
             "id" => 1,
             "table" => "Mesa do Eloi",
-            "attributes" => [
-                "Vida" => "100",
-                "Atletismo" => "75",
-                "Força" => "90",
-                "Intelecto" => "80",
-                "Sanidade" => "60"
-            ],
+            "attributes" => "Vida", // exemplo, poderia ser qualquer um dos AttributeName
             "players" => [
-                [
+                [ 
                     "id" => 1,
                     "name" => "Hélio",
-                    "attributes" => [90, 70, 85, 60, 50]
+                    "attributes" => [
+                        ["name" => "Vida", "value" => 90],
+                        ["name" => "Atletismo", "value" => 70],
+                        ["name" => "Força", "value" => 85],
+                        ["name" => "Intelecto", "value" => 60],
+                        ["name" => "Sanidade", "value" => 50],
+                    ]
                 ],
                 [
                     "id" => 2,
                     "name" => "Céi",
-                    "attributes" => [80, 65, 75, 70, 55]
+                    "attributes" => [
+                        ["name" => "Vida", "value" => 60],
+                        ["name" => "Atletismo", "value" => 50],
+                        ["name" => "Força", "value" => 35],
+                        ["name" => "Intelecto", "value" => 50],
+                        ["name" => "Sanidade", "value" => 45],
+                    ]
                 ]
             ],
             "dice" => [6, 6, 20],
             "system" => "D&D"
+        ],
+        [
+            "id" => 2,
+            "table" => "Mesa do IFRS",
+            "attributes" => "Vida",
+            "players" => [
+                [ 
+                    "id" => 1,
+                    "name" => "Ivan Prá",
+                    "attributes" => [
+                        ["name" => "Vida", "value" => 90],
+                        ["name" => "Atletismo", "value" => 20],
+                        ["name" => "Força", "value" => 80],
+                        ["name" => "Intelecto", "value" => 75],
+                        ["name" => "Sanidade", "value" => 50],
+                    ]
+                ],
+                [
+                    "id" => 2,
+                    "name" => "Jaques",
+                    "attributes" => [
+                        ["name" => "Vida", "value" => 75],
+                        ["name" => "Atletismo", "value" => 80],
+                        ["name" => "Força", "value" => 79],
+                        ["name" => "Intelecto", "value" => 82],
+                        ["name" => "Sanidade", "value" => 90],
+                    ]
+                ]
+            ],
+            "dice" => [6, 20, 100],
+            "system" => "IF"
         ]
     ];
-
 
     public function index () {
         return response()->json($this->data);

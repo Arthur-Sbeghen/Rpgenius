@@ -1,3 +1,7 @@
+/* CSS do prototipo, eh provisorio pq tudo deveria ter o mesmo estilo 
+com o styled-components e globals.css. Esse estilo está sendo importado
+direto em /home/page.tsx */
+
 * {
   margin: 0;
   padding: 0;
