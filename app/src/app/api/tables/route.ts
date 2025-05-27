@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
+import { api } from "@/lib/api";
 
 export async function GET() {
-  const response = await axios.get("http://localhost:8000/api/mesas");
-  return NextResponse.json(response.data);
+  try {
+    const { data } = await api.get("/tables");
+    return NextResponse.json(data);
+  } catch (error: any) {
+    return NextResponse.json(
+      { message: "Erro ao buscar tabelas", error: error.message },
+      { status: 500 }
+    );
+  }
 }

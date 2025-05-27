@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import axios from "axios";
 import type { Table } from "./schema";
 import "./style.css";
+import Link from "next/link";
 
 export default function HomePage() {
   // Estados, funcionam como variáveis
@@ -15,10 +15,20 @@ export default function HomePage() {
   // Busca as mesas com axios pelo endpoint '/api/tables' quando o DOM
   // é renderizado e armazena os dados no estado 'tables'
   useEffect(() => {
-    axios
-      .get("/api/tables")
-      .then((res) => setTables(res.data))
-      .catch((err) => console.error(err));
+    fetch("/api/tables")
+      .then((res) => res.json())
+      .then((data) => {
+        setTables(data);
+      })
+      .catch((error) => {
+        console.log(error);
+        Swal.fire({
+          icon: "error",
+          theme: "dark",
+          title: "Erro",
+          text: "Não foi possível carregar as mesas.",
+        });
+      });
   }, []);
 
   // Função que dispara modal dizendo que a funcionalidade ainda não está disponível
@@ -61,7 +71,7 @@ export default function HomePage() {
               <a onClick={noReleased}>Contato</a>
             </li>
             <li>
-              <a onClick={noReleased}>Nosso Projeto</a>
+              <Link href="/about">Sobre Nós</Link>
             </li>
             <div>
               <li>
@@ -147,8 +157,8 @@ export default function HomePage() {
               </label>
             </div>
             <div className="dice-buttons">
-              {selectedTable.dice.map((die) => (
-                <button key={die} onClick={() => rollDice(die)}>
+              {selectedTable.dice.map((die, index) => (
+                <button key={index} onClick={() => rollDice(die)}>
                   1d{die}
                 </button>
               ))}
