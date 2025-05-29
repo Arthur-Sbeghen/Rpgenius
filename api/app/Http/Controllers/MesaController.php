@@ -84,12 +84,7 @@ class MesaController extends Controller {
         return response()->json(['message'=>'Table not found'], 404);
     }
 
-    // public function add (Request $request) {
-    //     $newData = [
-    //         'id' => count($this->data) + 1,
-    //         "nome" => $request->input('nome'),
-    //         "desc" => $request->input('desc'),
-    //         "sys" => $request->input('sys'),
-    //     ];
-    // }
+    public function store (Request $request) {}
+    public function update (Request $request, $id) {}
+    public function destroy ($id) {}
 }
