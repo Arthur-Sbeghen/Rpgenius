@@ -9,7 +9,7 @@ export default function Home() {
         <h1>RPGenius</h1>
         <section title="Opções">
             <ul className="options">
-                <li><a href="#" className="btn" id="btnEntrar">Entrar</a></li>
+                <li><a href="/table" className="btn" id="btnEntrar">Entrar</a></li>
                 <li><a href="#" className="btn" id="btnCadastro">Cadastrar-se</a></li>
             </ul>
         </section>
