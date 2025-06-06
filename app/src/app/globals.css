@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Sem Tailwind para evitar conflitos */
 
 :root {
   --background: #ffffff;
