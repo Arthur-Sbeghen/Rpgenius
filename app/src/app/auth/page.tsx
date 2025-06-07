@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./auth.css";
 import { myAppHook } from "@/context/AppProvider";
-import Loader from "@/components/Loader/Loader";
+import { useRouter, useSearchParams } from "next/navigation";
 
 interface formData {
   login?: string;
@@ -20,8 +20,22 @@ const Auth: React.FC = () => {
     password: "",
     password_confirmation: "",
   });
+  const searchParams = useSearchParams();
 
-  const { login, register, isLoading } = myAppHook();
+  useEffect(() => {
+    const tipo = searchParams.get("tipo");
+    setIsLogin(tipo !== "cadastro");
+  }, [searchParams]);
+
+  const { login, register, isLoading, authToken } = myAppHook();
+
+  const router = useRouter();
+  useEffect(() => {
+    if (authToken) {
+      router.push("/table");
+      return;
+    }
+  }, [authToken, isLoading]);
 
   const handleOnChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -50,7 +64,6 @@ const Auth: React.FC = () => {
 
   return (
     <>
-      {isLoading && <Loader />} {}
       <div className="auth-container">
         <div className="auth-card">
           <h3 className="auth-title">{isLogin ? "Login" : "Cadastro"}</h3>
@@ -96,10 +109,7 @@ const Auth: React.FC = () => {
 
           <p className="auth-subtext">
             {isLogin ? "Não tem uma conta? " : "Você já tem uma conta? "}
-            <span
-              className="auth-change"
-              onClick={() => setIsLogin(!isLogin)}
-            >
+            <span className="auth-change" onClick={() => setIsLogin(!isLogin)}>
               {isLogin ? "Cadastre-se" : "Login"}
             </span>
           </p>

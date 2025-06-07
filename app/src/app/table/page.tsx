@@ -5,8 +5,20 @@ import Swal from "sweetalert2";
 import type { Table } from "./schema";
 import "./style.css";
 import Link from "next/link";
+import { myAppHook } from "@/context/AppProvider";
+import { useRouter } from "next/navigation";
 
 export default function HomePage() {
+  const { logout, authToken } = myAppHook();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authToken) {
+      router.push("/auth");
+      return;
+    }
+  }, [authToken]);
+
   // Estados, funcionam como variáveis
   const [tables, setTables] = useState<Table[]>([]);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
@@ -76,6 +88,11 @@ export default function HomePage() {
             <div>
               <li>
                 <a onClick={noReleased}>Configurações</a>
+              </li>
+            </div>
+            <div>
+              <li>
+                <a onClick={logout}>Sair</a>
               </li>
             </div>
           </ul>
@@ -174,6 +191,19 @@ export default function HomePage() {
             </div>
           </>
         )}
+        {useEffect(() => {
+          const loginSuccess = localStorage.getItem("loginSuccess");
+          if (loginSuccess === "true") {
+            Swal.fire({
+              icon: "success",
+              title: "Login realizado com sucesso!",
+              showConfirmButton: false,
+              timer: 10000,
+              timerProgressBar: true,
+            });
+            localStorage.removeItem("loginSuccess");
+          }
+        }, [])}
       </main>
     </>
   );

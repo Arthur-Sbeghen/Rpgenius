@@ -1,12 +1,13 @@
 "use client";
 
 import axios from "axios";
-import { createContext, useContext, useState } from "react";
-import { toast } from "react-toastify";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import Swal from "sweetalert2";
 
 interface AppProviderType {
+  authToken: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (
@@ -15,6 +16,7 @@ interface AppProviderType {
     password: string,
     password_confirmation: string
   ) => Promise<void>;
+  logout: () => void;
 }
 
 const AppContext = createContext<AppProviderType | undefined>(undefined);
@@ -22,9 +24,25 @@ const AppContext = createContext<AppProviderType | undefined>(undefined);
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [authToken, setAuthToken] = useState<string | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const token = Cookies.get("authToken");
+
+    if (token) {
+      setAuthToken(token);
+    } else {
+      if (
+        !window.location.pathname.includes("/auth") &&
+        !window.location.pathname.includes("/home")
+      ) {
+        router.push("/auth");
+      }
+    }
+    setIsLoading(false);
+  }, []); // <-- Array de dependências vazio para executar apenas uma vez
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
@@ -33,16 +51,29 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         email,
         password,
       });
+
       if (response.data.status) {
         Cookies.set("authToken", response.data.token, { expires: 1 });
         setAuthToken(response.data.token);
+
+        // Marca o sucesso no localStorage
+        localStorage.setItem("loginSuccess", "true");
+
+        // Redireciona para /table
         router.push("/table");
-        toast.success("Login successful");
       } else {
-        toast.error("Invalid login");
+        await Swal.fire({
+          icon: "error",
+          title: "Login inválido",
+          text: response.data.message,
+        });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro no servidor",
+        text: error.response?.data?.message,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -62,16 +93,44 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         password,
         password_confirmation,
       });
-      console.log(response);
-    } catch (error) {
-      console.log(error);
+
+      if (response.data.status) {
+        await Swal.fire({
+          icon: "success",
+          title: "Cadastro realizado!",
+          text: "Você já pode fazer login.",
+        });
+        router.push("/auth?tipo=login");
+      } else {
+        await Swal.fire({
+          icon: "error",
+          title: "Erro no cadastro",
+          text: response.data.message,
+        });
+      }
+    } catch (error: any) {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro no servidor",
+        text: error.response?.data?.message,
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
+  const logout = async () => {
+    setAuthToken(null);
+    Cookies.remove("authToken");
+    if (window.location.pathname !== "/home") {
+      window.location.href = "/home";
+    }
+  };
+
   return (
-    <AppContext.Provider value={{ login, register, isLoading }}>
+    <AppContext.Provider
+      value={{ login, register, isLoading, authToken, logout }}
+    >
       {children}
     </AppContext.Provider>
   );
