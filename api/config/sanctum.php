@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'stateful' => '',
+    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', 'localhost:3000')),
     
     // explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
     //     '%s%s',
