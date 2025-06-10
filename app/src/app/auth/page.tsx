@@ -64,57 +64,65 @@ const Auth: React.FC = () => {
 
   return (
     <>
-      <div className="auth-container">
-        <div className="auth-card">
-          <h3 className="auth-title">{isLogin ? "Login" : "Cadastro"}</h3>
-          <form className="auth-form" onSubmit={handleFormSubmit}>
-            {!isLogin && (
-              <input
-                name="login"
-                type="text"
-                placeholder="Login"
-                value={formdata.login}
-                onChange={handleOnChangeInput}
-                required
-              />
-            )}
+    <main>
+      <div className="auth-card">
+        <a href="/home" className="return-btn">Voltar para página Inicial</a>
+        <h3 className="auth-title">{isLogin ? "Login" : "Cadastro de Usuário"}</h3>
+        <form className="auth-form" onSubmit={handleFormSubmit}>
+          {/* input usuario caso cadastro */}
+          {!isLogin && (
             <input
-              name="email"
-              type="email"
-              placeholder="Email"
-              value={formdata.email}
+              name="login"
+              type="text"
+              placeholder="Usuário"
+              value={formdata.login}
               onChange={handleOnChangeInput}
               required
             />
-            <input
-              name="password"
-              type="password"
-              placeholder="Senha"
-              value={formdata.password}
-              onChange={handleOnChangeInput}
-              required
-            />
-            {!isLogin && (
-              <input
-                name="password_confirmation"
-                type="password"
-                placeholder="Confirmar Senha"
-                value={formdata.password_confirmation}
-                onChange={handleOnChangeInput}
-                required
-              />
-            )}
-            <button type="submit">{isLogin ? "Entrar" : "Registrar"}</button>
-          </form>
+          )}
 
-          <p className="auth-subtext">
-            {isLogin ? "Não tem uma conta? " : "Você já tem uma conta? "}
-            <span className="auth-change" onClick={() => setIsLogin(!isLogin)}>
-              {isLogin ? "Cadastre-se" : "Login"}
-            </span>
-          </p>
-        </div>
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={formdata.email}
+            onChange={handleOnChangeInput}
+            required
+          />
+
+          <input
+            name="password"
+            type="password"
+            placeholder="Senha"
+            value={formdata.password}
+            onChange={handleOnChangeInput}
+            required
+          />
+
+          {/* input verificação senha caso cadastro */}
+          {!isLogin && (
+            <input
+              name="password_confirmation"
+              type="password"
+              placeholder="Confirme a Senha"
+              value={formdata.password_confirmation}
+              onChange={handleOnChangeInput}
+              required
+            />
+          )}
+
+          <button type="submit">{isLogin ? "Entrar" : "Cadastrar"}</button>
+        </form>
+
+        <p className="auth-subtext">
+          {isLogin ? "Não tem uma conta? " : "Você já tem uma conta? "}
+          {/* span do código original */}
+          <span className="auth-change"  aria-label="link" onClick={() => setIsLogin(!isLogin)}>
+            {isLogin ? "Cadastre-se" : "Entrar"}
+          </span>
+        </p>
       </div>
+    </main>
     </>
   );
 };
