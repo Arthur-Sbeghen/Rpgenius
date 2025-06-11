@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id(); 
             $table->string('name');
             $table->unsignedBigInteger('idMaster');
-            $table->date('creationDate')->default(DB::raw('CURRENT_DATE'));
             $table->text('image')->nullable();
             $table->unsignedBigInteger('idSystem')->nullable(); 
             $table->foreign('idMaster')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('idSystem')->references('id')->on('systems')->onDelete('set null');
+            $table->timestamps();
         });
     }
 
