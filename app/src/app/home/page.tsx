@@ -44,7 +44,7 @@ export default function Home() {
         <div>
           <div className="apresentacao">
             <p className="f1">Suas campanhas de RPG em um só lugar!</p>
-            <div className="img1"></div>
+            
           </div>
           <p className="f2">
             Com o Rpgenius, você pode criar e gerenciar fichas e mesas de RPG,
@@ -52,7 +52,7 @@ export default function Home() {
             e explore seu mundo com apoio do RPGenius!
           </p>
         </div>
-        <div className="banner"></div>
+        
         <div className="funcionalidades">
           <div className="card">
             <h3>Crie mesas</h3>
@@ -64,14 +64,14 @@ export default function Home() {
                 como estão seus companheiros e salvar automaticamente sua ficha
                 ao longo da campanha.
               </p>
-              <div className="img"></div>
+              
             </div>
           </div>
           <div className="card">
             <h3>Gerencie suas fichas</h3>
 
             <div className="cont">
-              <div className="img"></div>
+              
               <p className="f">
                 Crie as fichas dos seus personagens de modo rápido, com a nossa
                 ajuda para preencher as informações! Com nossos modelos de
@@ -86,7 +86,7 @@ export default function Home() {
       <footer>
         <p>
           Desenvolvido por Arthur Sbeghen, Enrico Parolin, Rômulo Girotto e
-          Sarah Tumelero da Silveira{" "}
+          Sarah Tumelero da Silveira
         </p>
       </footer>
     </>
