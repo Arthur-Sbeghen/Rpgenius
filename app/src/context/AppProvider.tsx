@@ -45,12 +45,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   }, []); // <-- Array de dependências vazio para executar apenas uma vez
 
   const formatErrorMessages = (errorData: any): string => {
-    // Se for uma string simples, retorna como está
     if (typeof errorData === "string") {
       return errorData;
     }
 
-    // Se for um objeto de erros do Laravel (com propriedade 'errors')
     if (errorData?.errors) {
       const errors = errorData.errors;
       return Object.values(errors)
@@ -59,12 +57,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         .join("");
     }
 
-    // Se for uma mensagem padrão na propriedade 'message'
     if (errorData?.message) {
       return errorData.message;
     }
 
-    // Mensagem padrão caso não reconheça o formato
     return "Ocorreu um erro desconhecido. Por favor, tente novamente.";
   };
 

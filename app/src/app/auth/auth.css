@@ -19,7 +19,7 @@ main {
 }
 
 .auth-card {
-  max-width: 25rem;
+  width: 22rem;
   display: flex;
   flex-direction: column;
   align-items: center;
