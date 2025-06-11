@@ -15,7 +15,7 @@ export function useCookie({ requireAuth = false }: { requireAuth: boolean }) {
       return;
     }
     if (!requireAuth && token) {
-      router.replace("/table");
+      router.replace("/table"); 
       return;
     }
     setAllowed(true);
