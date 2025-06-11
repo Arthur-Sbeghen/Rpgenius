@@ -44,6 +44,30 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(false);
   }, []); // <-- Array de dependências vazio para executar apenas uma vez
 
+  const formatErrorMessages = (errorData: any): string => {
+    // Se for uma string simples, retorna como está
+    if (typeof errorData === "string") {
+      return errorData;
+    }
+
+    // Se for um objeto de erros do Laravel (com propriedade 'errors')
+    if (errorData?.errors) {
+      const errors = errorData.errors;
+      return Object.values(errors)
+        .flat()
+        .map((error: any) => `• ${error}<br>`)
+        .join("");
+    }
+
+    // Se for uma mensagem padrão na propriedade 'message'
+    if (errorData?.message) {
+      return errorData.message;
+    }
+
+    // Mensagem padrão caso não reconheça o formato
+    return "Ocorreu um erro desconhecido. Por favor, tente novamente.";
+  };
+
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
@@ -55,24 +79,22 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       if (response.data.status) {
         Cookies.set("authToken", response.data.token, { expires: 1 });
         setAuthToken(response.data.token);
-
-        // Marca o sucesso no localStorage
         localStorage.setItem("loginSuccess", "true");
-
-        // Redireciona para /table
         router.push("/table");
       } else {
         await Swal.fire({
           icon: "error",
           title: "Login inválido",
-          text: response.data.message,
+          theme: "dark",
+          html: formatErrorMessages(response.data.message),
         });
       }
     } catch (error: any) {
       await Swal.fire({
         icon: "error",
         title: "Erro no servidor",
-        text: error.response?.data?.message,
+        theme: "dark",
+        html: formatErrorMessages(error.response?.data),
       });
     } finally {
       setIsLoading(false);
@@ -98,6 +120,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         await Swal.fire({
           icon: "success",
           title: "Cadastro realizado!",
+          theme: "dark",
           text: "Você já pode fazer login.",
         });
         router.push("/auth?tipo=login");
@@ -105,14 +128,16 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         await Swal.fire({
           icon: "error",
           title: "Erro no cadastro",
-          text: response.data.message,
+          theme: "dark",
+          html: formatErrorMessages(response.data.message),
         });
       }
     } catch (error: any) {
       await Swal.fire({
         icon: "error",
         title: "Erro no servidor",
-        text: error.response?.data?.message,
+        theme: "dark",
+        html: formatErrorMessages(error.response?.data),
       });
     } finally {
       setIsLoading(false);
@@ -122,6 +147,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = async () => {
     setAuthToken(null);
     Cookies.remove("authToken");
+    localStorage.setItem("logoutSuccess", "true");
     if (window.location.pathname !== "/home") {
       window.location.href = "/home";
     }

@@ -1,8 +1,25 @@
 "use client";
 
+import { useEffect } from "react";
 import "./style.css";
+import Swal from "sweetalert2";
 
 export default function Home() {
+  useEffect(() => {
+    const logout = localStorage.getItem("logoutSuccess");
+    if (logout === "true") {
+      Swal.fire({
+        icon: "success",
+        title: "Você saiu com sucesso!",
+        theme: "dark",
+        timer: 4000,
+        showConfirmButton: false,
+        timerProgressBar: true,
+      });
+      localStorage.removeItem("logoutSuccess");
+    }
+  }, []);
+
   return (
     <>
       <header>

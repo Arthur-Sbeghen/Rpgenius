@@ -6,18 +6,12 @@ import type { Table } from "./schema";
 import "./style.css";
 import Link from "next/link";
 import { myAppHook } from "@/context/AppProvider";
-import { useRouter } from "next/navigation";
+import { useCookie } from "@/lib/auth";
 
 export default function HomePage() {
-  const { logout, authToken } = myAppHook();
-  const router = useRouter();
+  const { logout } = myAppHook();
 
-  useEffect(() => {
-    if (!authToken) {
-      router.push("/auth");
-      return;
-    }
-  }, [authToken]);
+  const { checked, allowed } = useCookie({ requireAuth: true });
 
   // Estados, funcionam como variáveis
   const [tables, setTables] = useState<Table[]>([]);
@@ -42,6 +36,23 @@ export default function HomePage() {
       })
       .finally(() => setLoadingTables(false));
   }, []);
+
+  useEffect(() => {
+    const loginSuccess = localStorage.getItem("loginSuccess");
+    if (loginSuccess === "true") {
+      Swal.fire({
+        icon: "success",
+        title: "Login realizado com sucesso!",
+        theme: "dark",
+        timer: 4000,
+        showConfirmButton: false,
+        timerProgressBar: true,
+      });
+      localStorage.removeItem("loginSuccess");
+    }
+  }, []);
+
+  if (!checked || !allowed) return null;
 
   // Função que dispara modal dizendo que a funcionalidade ainda não está disponível
   const noReleased = () => {
@@ -191,19 +202,6 @@ export default function HomePage() {
             </div>
           </>
         )}
-        {useEffect(() => {
-          const loginSuccess = localStorage.getItem("loginSuccess");
-          if (loginSuccess === "true") {
-            Swal.fire({
-              icon: "success",
-              title: "Login realizado com sucesso!",
-              showConfirmButton: false,
-              timer: 10000,
-              timerProgressBar: true,
-            });
-            localStorage.removeItem("loginSuccess");
-          }
-        }, [])}
       </main>
     </>
   );

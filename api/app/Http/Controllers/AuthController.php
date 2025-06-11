@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller {
     
     //recebe via API (nome, email, senha, conf_senha)
-    public function register (Request $request) {
+    public function register(Request $request) {
         $messages = [
             'login.required' => 'O nome de usuário é obrigatório.',
             'login.string' => 'O login deve conter apenas texto.',
@@ -18,12 +18,14 @@ class AuthController extends Controller {
             'email.email' => 'Digite um e-mail válido (ex: usuario@exemplo.com).',
             'email.unique' => 'Este e-mail já está cadastrado.',
             'password.required' => 'A senha é obrigatória.',
+            'password.confirmed' => 'A confirmação de senha não corresponde.',
         ];
 
         $data = $request->validate([
             "login" => "required|string|unique:users,login",
             "email" => "required|email|unique:users,email",
-            "password" => "required"
+            "password" => "required|confirmed",
+            "password_confirmation" => "required"
         ], $messages);
 
         User::create($data);
