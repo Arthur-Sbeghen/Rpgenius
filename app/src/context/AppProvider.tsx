@@ -1,17 +1,18 @@
 "use client";
 
-import axios from "axios";
+import { api } from "@/lib/apiRequests";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import Swal from "sweetalert2";
+import { Alert } from "@/components/Alert/Alert";
+import { usePathname } from "next/navigation";
 
 interface AppProviderType {
   authToken: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (
-    name: string,
+    login: string,
     email: string,
     password: string,
     password_confirmation: string
@@ -21,12 +22,11 @@ interface AppProviderType {
 
 const AppContext = createContext<AppProviderType | undefined>(undefined);
 
-const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
-
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [authToken, setAuthToken] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const token = Cookies.get("authToken");
@@ -34,10 +34,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     if (token) {
       setAuthToken(token);
     } else {
-      if (
-        !window.location.pathname.includes("/auth") &&
-        !window.location.pathname.includes("/home")
-      ) {
+      if (!pathname.includes("/auth") && !pathname.includes("/home")) {
         router.push("/auth");
       }
     }
@@ -67,7 +64,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/login`, {
+      const response = await api.post(`/auth/login`, {
         email,
         password,
       });
@@ -78,19 +75,15 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.setItem("loginSuccess", "true");
         router.push("/table");
       } else {
-        await Swal.fire({
-          icon: "error",
-          title: "Login inválido",
-          theme: "dark",
+        Alert.error("", {
           html: formatErrorMessages(response.data.message),
+          title: "Login inválido",
         });
       }
     } catch (error: any) {
-      await Swal.fire({
-        icon: "error",
-        title: "Erro no servidor",
-        theme: "dark",
+      Alert.error("", {
         html: formatErrorMessages(error.response?.data),
+        title: "Opa!",
       });
     } finally {
       setIsLoading(false);
@@ -105,7 +98,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   ) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/register`, {
+      const response = await api.post(`/auth/register`, {
         login,
         email,
         password,
@@ -113,27 +106,20 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       if (response.data.status) {
-        await Swal.fire({
-          icon: "success",
+        Alert.success("Você já pode fazer login.", {
           title: "Cadastro realizado!",
-          theme: "dark",
-          text: "Você já pode fazer login.",
         });
         router.push("/auth?tipo=login");
       } else {
-        await Swal.fire({
-          icon: "error",
-          title: "Erro no cadastro",
-          theme: "dark",
+        Alert.error("", {
           html: formatErrorMessages(response.data.message),
+          title: "Erro no cadastro",
         });
       }
     } catch (error: any) {
-      await Swal.fire({
-        icon: "error",
-        title: "Erro no servidor",
-        theme: "dark",
+      Alert.error("", {
         html: formatErrorMessages(error.response?.data),
+        title: "Opa!",
       });
     } finally {
       setIsLoading(false);
@@ -144,8 +130,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthToken(null);
     Cookies.remove("authToken");
     localStorage.setItem("logoutSuccess", "true");
-    if (window.location.pathname !== "/home") {
-      window.location.href = "/home";
+    if (!pathname.includes("/home")) {
+      router.push("/home");
     }
   };
 

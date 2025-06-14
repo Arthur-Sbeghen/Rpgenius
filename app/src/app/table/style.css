@@ -2,24 +2,7 @@
 com o styled-components e globals.css. Esse estilo está sendo importado
 direto em /home/page.tsx */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Arial", sans-serif;
-}
-
-body {
-  background-color: #0a0a0a;
-  color: #ffffff;
-  text-align: center;
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  overflow-x: hidden;
-}
-
-.header {
+.table-header {
   position: fixed;
   top: 0;
   left: 0;
@@ -88,20 +71,16 @@ body {
   background-color: #8a2be2;
 }
 
-main {
+.table-main {
   margin-top: 5em;
   padding: 40px;
   transition: margin-left 0.3s;
-  width: 100%;
+  width: 100vw;
+  min-height: 100vh;
   overflow-x: hidden;
 }
 
-h1 {
-  margin-bottom: 20px;
-  color: #ffffff;
-}
-
-button {
+.table-btn {
   background-color: #8a2be2;
   color: #ffffff;
   border: none;
@@ -114,7 +93,7 @@ button {
   transition: 0.3s;
 }
 
-button:hover {
+.table-btn:hover {
   background-color: #6a1bbf;
 }
 
@@ -181,7 +160,9 @@ button:hover {
   scale: 1.2;
 }
 
-h1 {
+.table-h1 {
+  margin-bottom: 20px;
+  color: #ffffff;
   margin-top: 0.7em;
   font-size: 2.5em;
   text-shadow: 0 0 15px rgba(138, 43, 226, 0.7);
@@ -189,7 +170,7 @@ h1 {
   letter-spacing: 2px;
 }
 
-h4 {
+.table-h4 {
   color: #a970ff;
   font-size: 1.2em;
   margin-bottom: 40px;

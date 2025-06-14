@@ -50,7 +50,6 @@ class AuthController extends Controller {
 
     //recebe via API (email, senha)
     public function login(Request $request) {
-    // Validação com mensagens personalizadas
         $data = $request->validate([
             "email" => "required|email:rfc,dns",
             "password" => "required"

@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { Alert } from "@/components/Alert/Alert";
 import type { Table } from "./schema";
-import "./style.css";
 import Link from "next/link";
 import { myAppHook } from "@/context/AppProvider";
-import { useCookie } from "@/lib/auth";
+import { authCheck } from "@/lib/authCheck";
+import axios from "axios";
+import Cookies from "js-cookie";
+import "./style.css";
+import Loader from "@/components/Loader/Loader";
 
 export default function HomePage() {
   const { logout } = myAppHook();
 
-  const { checked, allowed } = useCookie({ requireAuth: true });
+  const { checked, allowed } = authCheck({ requireAuth: true });
 
   // Estados, funcionam como variáveis
   const [tables, setTables] = useState<Table[]>([]);
@@ -22,28 +25,32 @@ export default function HomePage() {
   // Busca as mesas com axios pelo endpoint '/api/tables' quando o DOM
   // é renderizado e armazena os dados no estado 'tables'
   useEffect(() => {
-    fetch("/api/tables")
-      .then((res) => res.json())
-      .then((data) => setTables(data))
-      .catch((error) => {
-        console.log("erro:", error);
-        Swal.fire({
-          icon: "error",
-          theme: "dark",
+    const token = Cookies.get("authToken");
+
+    axios
+      .get("/api/tables", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setTables(res.data);
+      })
+      .catch((error: any) => {
+        Alert.error("Não foi possível carregar suas mesas.", {
           title: "Erro",
-          text: "Não foi possível carregar as mesas.",
         });
       })
-      .finally(() => setLoadingTables(false));
+      .finally(() => {
+        setLoadingTables(false);
+      });
   }, []);
 
   useEffect(() => {
     const loginSuccess = localStorage.getItem("loginSuccess");
     if (loginSuccess === "true") {
-      Swal.fire({
-        icon: "success",
+      Alert.success("", {
         title: "Login realizado com sucesso!",
-        theme: "dark",
         timer: 4000,
         showConfirmButton: false,
         timerProgressBar: true,
@@ -52,15 +59,12 @@ export default function HomePage() {
     }
   }, []);
 
-  if (!checked || !allowed) return null;
+  if (!checked || !allowed) return <Loader />;
 
   // Função que dispara modal dizendo que a funcionalidade ainda não está disponível
   const noReleased = () => {
-    return Swal.fire({
+    Alert.warning("Esta função ainda não foi criada neste protótipo.", {
       title: "Opa!",
-      text: "Esta função ainda não foi criada neste protótipo. Assim que ela for, iremos notificá-lo!",
-      icon: "warning",
-      theme: "dark",
       confirmButtonText: "Ok!",
       confirmButtonColor: "#8a2be2",
     });
@@ -70,7 +74,7 @@ export default function HomePage() {
 
   return (
     <>
-      <header className="header">
+      <header className="table-header">
         {/* Icone FontAwesome para abrir a sidebar */}
         <i
           /* Inverte o boolean do estado de sidebar ativo ao clicar */
@@ -111,14 +115,18 @@ export default function HomePage() {
       </header>
 
       {/* Acabou o header e a sidebar, agr é a main (visão de menu das mesas ou de mesa específica) */}
-      <main>
+      <main className="table-main">
         {!selectedTable ? (
           /* Se nenhuma tabela foi selecionada: */
           <>
-            <h1>Suas Mesas de RPG!</h1>
+            <h1 className="table-h1">Suas Mesas de RPG!</h1>
             <div>
-              <button onClick={noReleased}>Criar Mesa</button>
-              <button onClick={noReleased}>Juntar-se à mesas</button>
+              <button className="table-btn" onClick={noReleased}>
+                Criar Mesa
+              </button>
+              <button className="table-btn" onClick={noReleased}>
+                Juntar-se à mesas
+              </button>
             </div>
             <div className="rpgTables">
               {loadingTables ? (
@@ -164,8 +172,8 @@ export default function HomePage() {
               ></i>
             </div>
             {/* Detalhes da mesa */}
-            <h1>{selectedTable.table}</h1>
-            <h4>{selectedTable.system}</h4>
+            <h1 className="table-h1">{selectedTable.table}</h1>
+            <h4 className="table-h4">{selectedTable.system}</h4>
             {/* Status dos jogadores */}
             <div className="players-container">
               {selectedTable.players.map((player) => (
@@ -192,7 +200,11 @@ export default function HomePage() {
             </div>
             <div className="dice-buttons">
               {selectedTable.dice.map((die, index) => (
-                <button key={index} onClick={() => rollDice(die)}>
+                <button
+                  className="table-btn"
+                  key={index}
+                  onClick={() => rollDice(die)}
+                >
                   1d{die}
                 </button>
               ))}
