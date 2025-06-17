@@ -96,6 +96,7 @@ class AuthController extends Controller {
 
         if (!$token) {
              return response()->json([
+                "token" => $token,
                 "status" => false,
                 "message" => "Credenciais não foram passadas corretamente",
             ], 400);
@@ -120,7 +121,30 @@ class AuthController extends Controller {
         ]);
     }
     
-    public function forgotPassword () {}
+    public function forgotPassword (Request $request) {
+        $data = $request->validate([
+            "email" => "required|email:rfc,dns"
+        ], [
+            'email.required' => 'O e-mail é obrigatório.',
+            'email.email' => 'Digite um e-mail válido.',
+        ]);
+
+        $user = User::where('email', $data['email'])->first();
+        if (!$user) {
+            return response()->json([
+                "status" => false,
+                "message" => "E-mail não encontrado."
+            ], 404);
+        }
+
+        //mandar e-mail;
+
+        return response()->json([
+            "status" => true,
+            "message" => "Instruções para recuperação de senha enviadas para o e-mail."
+        ]);
+
+    }
     public function  resetPassword () {}
     public function data (Request $request) {}
 }

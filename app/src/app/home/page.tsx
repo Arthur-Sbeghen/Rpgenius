@@ -3,21 +3,9 @@
 import { useEffect } from "react";
 import "./style.css";
 import { Alert } from "@/components/Alert/Alert";
+import Link from "next/link";
 
 export default function Home() {
-  useEffect(() => {
-    const logout = localStorage.getItem("logoutSuccess");
-    if (logout === "true") {
-      Alert.success("", {
-        title: "Você saiu com sucesso!",
-        timer: 3000,
-        showConfirmButton: false,
-        timerProgressBar: true,
-      });
-      localStorage.removeItem("logoutSuccess");
-    }
-  }, []);
-
   return (
     <>
       <header className="home-header">
@@ -25,14 +13,14 @@ export default function Home() {
         <section title="Opções">
           <ul className="options">
             <li>
-              <a href="/auth" className="btn" id="btnEntrar">
+              <Link href="/auth" className="btn" id="btnEntrar">
                 Entrar
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/auth?tipo=cadastro" className="btn" id="btnCadastro">
+              <Link href="/auth?tipo=cadastro" className="btn" id="btnCadastro">
                 Cadastrar-se
-              </a>
+              </Link>
             </li>
           </ul>
         </section>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { myAppHook } from "@/context/AppProvider";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Alert } from "@/components/Alert/Alert";
@@ -9,12 +9,22 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import "./auth.css";
 import { Toast } from "@/components/Toast/Toast";
+import { api } from "@/lib/apiRequests";
 
 // Toast simples
 const Auth: React.FC = () => {
   const searchParams = useSearchParams();
   const tipo = searchParams.get("tipo");
-  const isLogin = tipo !== "cadastro";
+  const isLogin = tipo !== "cadastro" && tipo !== "recuperar";
+  const isForgot = tipo === "recuperar";
+
+  // Fade animation state
+  const [fade, setFade] = useState(false);
+  useEffect(() => {
+    setFade(false);
+    const timeout = setTimeout(() => setFade(true), 10);
+    return () => clearTimeout(timeout);
+  }, [tipo]);
 
   // Schema de validação
   const authSchema = yup.object().shape({
@@ -57,8 +67,9 @@ const Auth: React.FC = () => {
 
   const { login, register: registerUser, authToken } = myAppHook();
   const router = useRouter();
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
 
-  // Redireciona se já estiver autenticado
   useEffect(() => {
     if (authToken) {
       router.push("/table");
@@ -70,7 +81,6 @@ const Auth: React.FC = () => {
       if (isLogin) {
         await login(formData.email, formData.password);
       } else {
-        // Verificação explícita dos campos obrigatórios
         if (
           typeof formData.login !== "string" ||
           typeof formData.password_confirmation !== "string"
@@ -88,11 +98,79 @@ const Auth: React.FC = () => {
       }
     } catch (error) {
       Alert.error("Erro na autenticação");
+    } finally {
+      reset();
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    try {
+      const response = await api.post("/auth/forgot-password", {
+        email: forgotEmail,
+      });
+
+      if (response.data.status) {
+        Toast.success(
+          "Se o e-mail estiver cadastrado, você receberá instruções."
+        );
+        setForgotEmail("");
+        router.push("/auth");
+      } else {
+        Toast.error(
+          response.data.message || "Erro ao solicitar recuperação de senha."
+        );
+      }
+    } catch (error: any) {
+      Toast.error("Erro ao solicitar recuperação de senha.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  if (isForgot) {
+    return (
+      <main className={`auth-main auth-fade${fade ? " auth-fade-active" : ""}`}>
+        <div className="auth-card">
+          <a href="/home" className="return-btn">
+            Voltar para página Inicial
+          </a>
+          <h3 className="auth-title">Recupere sua senha</h3>
+          <form className="auth-form" onSubmit={handleForgotPassword}>
+            <div className="input-group">
+              <input
+                type="email"
+                placeholder="Digite seu e-mail"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={forgotLoading}
+              className={forgotLoading ? "loading" : ""}
+            >
+              {forgotLoading ? "Enviando..." : "Enviar link de recuperação"}
+            </button>
+          </form>
+          <p className="auth-subtext">
+            <button
+              type="button"
+              className="auth-change"
+              onClick={() => router.push("/auth")}
+            >
+              Voltar ao login
+            </button>
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   return (
-    <main className="auth-main">
+    <main className={`auth-main auth-fade${fade ? " auth-fade-active" : ""}`}>
       <div className="auth-card">
         <a href="/home" className="return-btn">
           Voltar para página Inicial
@@ -102,7 +180,6 @@ const Auth: React.FC = () => {
         </h3>
 
         <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
-          {/* Input usuário (cadastro) */}
           {!isLogin && (
             <div className="input-group">
               <input {...register("login")} type="text" placeholder="Usuário" />
@@ -112,7 +189,6 @@ const Auth: React.FC = () => {
             </div>
           )}
 
-          {/* Input email */}
           <div className="input-group">
             <input {...register("email")} type="email" placeholder="Email" />
             {errors.email && (
@@ -120,7 +196,6 @@ const Auth: React.FC = () => {
             )}
           </div>
 
-          {/* Input senha */}
           <div className="input-group">
             <input
               {...register("password")}
@@ -156,6 +231,18 @@ const Auth: React.FC = () => {
             {isSubmitting ? "Processando..." : isLogin ? "Entrar" : "Cadastrar"}
           </button>
         </form>
+
+        {isLogin && (
+          <p className="auth-subtext">
+            <button
+              type="button"
+              className="auth-change"
+              onClick={() => router.push("/auth?tipo=recuperar")}
+            >
+              Esqueceu a senha?
+            </button>
+          </p>
+        )}
 
         <p className="auth-subtext">
           {isLogin ? "Não tem uma conta? " : "Você já tem uma conta? "}

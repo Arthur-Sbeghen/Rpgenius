@@ -46,19 +46,6 @@ export default function HomePage() {
       });
   }, []);
 
-  useEffect(() => {
-    const loginSuccess = localStorage.getItem("loginSuccess");
-    if (loginSuccess === "true") {
-      Alert.success("", {
-        title: "Login realizado com sucesso!",
-        timer: 4000,
-        showConfirmButton: false,
-        timerProgressBar: true,
-      });
-      localStorage.removeItem("loginSuccess");
-    }
-  }, []);
-
   if (!checked || !allowed) return <Loader />;
 
   // Função que dispara modal dizendo que a funcionalidade ainda não está disponível
@@ -84,30 +71,45 @@ export default function HomePage() {
         {/* Sidebar que muda o nome da classe conforme muda o estado isSidebarActive */}
         <nav className={`sidebar ${isSidebarActive ? "active" : "desativado"}`}>
           <i
-            /* Inverte o boolean do estado de sidebar ativo ao clicar */
             onClick={() => setIsSidebarActive(!isSidebarActive)}
             className="fas fa-x menu-close"
           ></i>
           <ul>
             <li>
-              {/* Chama a função noReleased ao clicar, importante que não tenha () 
-              senão executaria no carregamento do DOM e não ao ser clicado */}
-              <a onClick={noReleased}>Home</a>
+              <a onClick={noReleased}>
+                <i className="fas fa-home" style={{ marginRight: 8 }}></i>
+                Home
+              </a>
             </li>
             <li>
-              <a onClick={noReleased}>Contato</a>
+              <a onClick={noReleased}>
+                <i className="fas fa-envelope" style={{ marginRight: 8 }}></i>
+                Contato
+              </a>
             </li>
             <li>
-              <Link href="/about">Sobre Nós</Link>
+              <Link href="/about">
+                <i className="fas fa-users" style={{ marginRight: 8 }}></i>
+                Sobre Nós
+              </Link>
             </li>
             <div>
               <li>
-                <a onClick={noReleased}>Configurações</a>
+                <a onClick={noReleased}>
+                  <i className="fas fa-cog" style={{ marginRight: 8 }}></i>
+                  Configurações
+                </a>
               </li>
             </div>
             <div>
               <li>
-                <a onClick={logout}>Sair</a>
+                <a onClick={logout}>
+                  <i
+                    className="fas fa-sign-out-alt"
+                    style={{ marginRight: 8 }}
+                  ></i>
+                  Sair
+                </a>
               </li>
             </div>
           </ul>
@@ -122,32 +124,43 @@ export default function HomePage() {
             <h1 className="table-h1">Suas Mesas de RPG!</h1>
             <div>
               <button className="table-btn" onClick={noReleased}>
+                <i className="fas fa-plus" style={{ marginRight: 8 }}></i>
                 Criar Mesa
               </button>
               <button className="table-btn" onClick={noReleased}>
+                <i
+                  className="fas fa-sign-in-alt"
+                  style={{ marginRight: 8 }}
+                ></i>
                 Juntar-se à mesas
               </button>
             </div>
             <div className="rpgTables">
               {loadingTables ? (
-                <p>
-                  <b>Carregando Mesas...</b>
-                </p>
+                <Loader />
               ) : (
                 tables.map((table) => (
                   <div
                     className="table"
-                    /* Necessário no React */
                     key={table.id}
-                    /* Adiciona o id da mesa desta div no estado selectedTableId, 
-                  que depois será buscada pela função selectedTable e mudará o 
-                  conteúdo da <main> automaticamente pcausa do tenário '!selectedTable ? (' */
                     onClick={() => setSelectedTableId(table.id)}
                   >
-                    <div className="tableName">{table.table}</div>
-                    <div className="tableSystem">{table.system}</div>
+                    <div className="tableName">
+                      <i
+                        className="fas fa-dice-d20"
+                        style={{ marginRight: 8 }}
+                      ></i>
+                      {table.table}
+                    </div>
+                    <div className="tableSystem">
+                      <i className="fas fa-book" style={{ marginRight: 8 }}></i>
+                      {table.system}
+                    </div>
                     <div className="tablePlayers">
-                      {/* Exemplo de CSS inline */}
+                      <i
+                        className="fas fa-user-friends"
+                        style={{ marginRight: 8 }}
+                      ></i>
                       <span style={{ fontWeight: "bold" }}>
                         {table.players.length === 0
                           ? "Sem Jogadores"

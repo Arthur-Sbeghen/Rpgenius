@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { Alert } from "@/components/Alert/Alert";
 import { usePathname } from "next/navigation";
+import { Toast } from "@/components/Toast/Toast";
 
 interface AppProviderType {
   authToken: string | null;
@@ -72,8 +73,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       if (response.data.status) {
         Cookies.set("authToken", response.data.token, { expires: 1 });
         setAuthToken(response.data.token);
-        localStorage.setItem("loginSuccess", "true");
-        router.push("/table");
+        Toast.success("Login realizado com sucesso!");
       } else {
         Alert.error("", {
           html: formatErrorMessages(response.data.message),
@@ -127,11 +127,29 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    setAuthToken(null);
-    Cookies.remove("authToken");
-    localStorage.setItem("logoutSuccess", "true");
-    if (!pathname.includes("/home")) {
-      router.push("/home");
+    try {
+      const token = Cookies.get("authToken");
+      const response = await api.post(
+        "/auth/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.status) {
+        Toast.success("Você foi desconectado com sucesso!");
+      } else {
+        Toast.error("Erro ao desconectar. Por favor, tente novamente.");
+      }
+    } catch (error) {
+      Toast.error("Erro ao desconectar. Por favor, tente novamente.");
+    } finally {
+      setAuthToken(null);
+      Cookies.remove("authToken");
+      router.replace("/home");
     }
   };
 

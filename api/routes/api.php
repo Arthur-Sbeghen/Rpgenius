@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']); // Adiciona registro de autenticação
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login'); // Loga usuário
-    Route::get('logout', [AuthController::class, 'logout']);
+    Route::post('logout', [AuthController::class, 'logout']);
 
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']); // Encaminha instruções para recuperação do registro
     Route::post('/reset-password', [AuthController::class, 'resetPassword']); // Altera a senha do registro

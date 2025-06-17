@@ -1,16 +1,30 @@
 // utils/toast.ts
-import { toast, TypeOptions } from "react-toastify";
+import {
+  toast,
+  ToastContainer as ReactToastContainer,
+  TypeOptions,
+} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-type ToastType = TypeOptions | "question"; // Adicionamos o tipo question para compatibilidade
+// Tipos semelhantes ao Alert
+export type ToastType = "success" | "error" | "warning" | "info" | "question";
 
-interface ToastOptions {
+export interface ToastOptions {
+  position?:
+    | "top-right"
+    | "top-left"
+    | "top-center"
+    | "bottom-right"
+    | "bottom-left"
+    | "bottom-center";
   title?: string;
-  message: string;
+  text?: string;
+  theme?: "light" | "dark" | "colored";
+  message?: string;
   confirmButtonText?: string;
   cancelButtonText?: string;
-  showConfirmButton?: boolean;
   showCancelButton?: boolean;
+  showConfirmButton?: boolean;
   timer?: number;
   timerProgressBar?: boolean;
   onConfirm?: () => void;
@@ -21,16 +35,20 @@ interface ToastOptions {
 const showToast = (
   type: ToastType,
   message: string,
-  options: Omit<ToastOptions, "message"> = {}
+  options: ToastOptions = {}
 ) => {
+  const finalMessage = options.text || message || options.message || "";
   const {
     title,
-    confirmButtonText = "OK",
-    showConfirmButton = type !== "question",
-    showCancelButton = type === "question",
+    cancelButtonText,
+    confirmButtonText,
+    showConfirmButton = type === "question" ? true : options.showConfirmButton,
+    showCancelButton = type === "question" ? true : options.showCancelButton,
     onConfirm,
     onCancel,
     html,
+    timer,
+    timerProgressBar,
     ...toastOptions
   } = options;
 
@@ -40,7 +58,7 @@ const showToast = (
       {html ? (
         <div dangerouslySetInnerHTML={{ __html: html }} />
       ) : (
-        <p className="toast-message">{message}</p>
+        <p className="toast-message">{finalMessage}</p>
       )}
       {(showConfirmButton || showCancelButton) && (
         <div className="toast-buttons">
@@ -52,7 +70,7 @@ const showToast = (
                 toast.dismiss();
               }}
             >
-              {options.cancelButtonText || "Cancelar"}
+              {cancelButtonText}
             </button>
           )}
           {showConfirmButton && (
@@ -73,23 +91,24 @@ const showToast = (
 
   return toast(content, {
     type: type === "question" ? "default" : type,
-    autoClose: options.timer || (type === "error" ? 5000 : 3000),
-    hideProgressBar: !options.timerProgressBar,
-    closeButton: false,
+    theme: "dark",
+    position: "bottom-right",
+    autoClose: 1500,
+    hideProgressBar: !timerProgressBar,
     ...toastOptions,
   });
 };
 
 export const Toast = {
-  success: (message: string, options?: Omit<ToastOptions, "message">) =>
+  success: (message: string, options?: ToastOptions) =>
     showToast("success", message, options),
-  error: (message: string, options?: Omit<ToastOptions, "message">) =>
+  error: (message: string, options?: ToastOptions) =>
     showToast("error", message, options),
-  warning: (message: string, options?: Omit<ToastOptions, "message">) =>
+  warning: (message: string, options?: ToastOptions) =>
     showToast("warning", message, options),
-  info: (message: string, options?: Omit<ToastOptions, "message">) =>
+  info: (message: string, options?: ToastOptions) =>
     showToast("info", message, options),
-  confirm: (message: string, options?: Omit<ToastOptions, "message">) =>
+  confirm: (message: string, options?: ToastOptions) =>
     showToast("question", message, {
       showCancelButton: true,
       showConfirmButton: true,
@@ -100,7 +119,7 @@ export const Toast = {
 
 export const ToastContainer = () => (
   <div className="toast-provider">
-    <ToastContainer
+    <ReactToastContainer
       position="top-right"
       newestOnTop
       closeOnClick={false}
