@@ -1,17 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+import { Alert } from "@/components/Alert/Alert";
 import type { Table } from "./schema";
-import "./style.css";
 import Link from "next/link";
 import { myAppHook } from "@/context/AppProvider";
-import { useCookie } from "@/lib/auth";
+import { authCheck } from "@/lib/authCheck";
+import axios from "axios";
+import Cookies from "js-cookie";
+import "./style.css";
+import Loader from "@/components/Loader/Loader";
 
 export default function HomePage() {
   const { logout } = myAppHook();
 
-  const { checked, allowed } = useCookie({ requireAuth: true });
+  const { checked, allowed } = authCheck({ requireAuth: true });
 
   // Estados, funcionam como variáveis
   const [tables, setTables] = useState<Table[]>([]);
@@ -22,55 +25,60 @@ export default function HomePage() {
   // Busca as mesas com axios pelo endpoint '/api/tables' quando o DOM
   // é renderizado e armazena os dados no estado 'tables'
   useEffect(() => {
-    fetch("/api/tables")
-      .then((res) => res.json())
-      .then((data) => setTables(data))
-      .catch((error) => {
-        console.log("erro:", error);
-        Swal.fire({
-          icon: "error",
-          theme: "dark",
+    const token = Cookies.get("authToken");
+
+    axios
+      .get("/api/tables", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setTables(res.data);
+      })
+      .catch((error: any) => {
+        Alert.error("Não foi possível carregar suas mesas.", {
           title: "Erro",
-          text: "Não foi possível carregar as mesas.",
         });
       })
-      .finally(() => setLoadingTables(false));
-  }, []);
-
-  useEffect(() => {
-    const loginSuccess = localStorage.getItem("loginSuccess");
-    if (loginSuccess === "true") {
-      Swal.fire({
-        icon: "success",
-        title: "Login realizado com sucesso!",
-        theme: "dark",
-        timer: 4000,
-        showConfirmButton: false,
-        timerProgressBar: true,
+      .finally(() => {
+        setLoadingTables(false);
       });
-      localStorage.removeItem("loginSuccess");
-    }
   }, []);
 
-  if (!checked || !allowed) return null;
+  if (!checked || !allowed) return <Loader />;
 
-  // Função que dispara modal dizendo que a funcionalidade ainda não está disponível
   const noReleased = () => {
-    return Swal.fire({
+    Alert.warning("Esta função ainda não foi criada neste protótipo.", {
       title: "Opa!",
-      text: "Esta função ainda não foi criada neste protótipo. Assim que ela for, iremos notificá-lo!",
-      icon: "warning",
-      theme: "dark",
       confirmButtonText: "Ok!",
       confirmButtonColor: "#8a2be2",
     });
+  };
+
+  const tableEnter = async () => {
+    const result = await Alert.fire({
+      title: "Entrar em uma mesa",
+      input: "text",
+      inputLabel: "Digite o código da mesa:",
+      inputPlaceholder: "Código da mesa",
+      confirmButtonText: "Entrar",
+      confirmButtonColor: "#8a2be2",
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      background: "#232136",
+      color: "#fff",
+    });
+    if (result.isConfirmed && result.value) {
+      Alert.success(`Código digitado: ${result.value}`, { title: "Sucesso" });
+    }
   };
 
   const selectedTable = tables?.find((t) => t.id === selectedTableId);
 
   return (
     <>
-      <header className="header">
+      <header className="table-header">
         {/* Icone FontAwesome para abrir a sidebar */}
         <i
           /* Inverte o boolean do estado de sidebar ativo ao clicar */
@@ -80,30 +88,45 @@ export default function HomePage() {
         {/* Sidebar que muda o nome da classe conforme muda o estado isSidebarActive */}
         <nav className={`sidebar ${isSidebarActive ? "active" : "desativado"}`}>
           <i
-            /* Inverte o boolean do estado de sidebar ativo ao clicar */
             onClick={() => setIsSidebarActive(!isSidebarActive)}
             className="fas fa-x menu-close"
           ></i>
           <ul>
             <li>
-              {/* Chama a função noReleased ao clicar, importante que não tenha () 
-              senão executaria no carregamento do DOM e não ao ser clicado */}
-              <a onClick={noReleased}>Home</a>
+              <a onClick={noReleased}>
+                <i className="fas fa-home" style={{ marginRight: 8 }}></i>
+                Home
+              </a>
             </li>
             <li>
-              <a onClick={noReleased}>Contato</a>
+              <a onClick={noReleased}>
+                <i className="fas fa-envelope" style={{ marginRight: 8 }}></i>
+                Contato
+              </a>
             </li>
             <li>
-              <Link href="/about">Sobre Nós</Link>
+              <Link href="/about">
+                <i className="fas fa-users" style={{ marginRight: 8 }}></i>
+                Sobre Nós
+              </Link>
             </li>
             <div>
               <li>
-                <a onClick={noReleased}>Configurações</a>
+                <a onClick={noReleased}>
+                  <i className="fas fa-cog" style={{ marginRight: 8 }}></i>
+                  Configurações
+                </a>
               </li>
             </div>
             <div>
               <li>
-                <a onClick={logout}>Sair</a>
+                <a onClick={logout}>
+                  <i
+                    className="fas fa-sign-out-alt"
+                    style={{ marginRight: 8 }}
+                  ></i>
+                  Sair
+                </a>
               </li>
             </div>
           </ul>
@@ -111,35 +134,47 @@ export default function HomePage() {
       </header>
 
       {/* Acabou o header e a sidebar, agr é a main (visão de menu das mesas ou de mesa específica) */}
-      <main>
+      <main className="table-main">
         {!selectedTable ? (
           /* Se nenhuma tabela foi selecionada: */
           <>
-            <h1>Suas Mesas de RPG!</h1>
+            <h1 className="table-h1">Suas Mesas de RPG!</h1>
             <div>
-              <button onClick={noReleased}>Criar Mesa</button>
-              <button onClick={noReleased}>Juntar-se à mesas</button>
+              <button className="table-btn" onClick={noReleased}>
+                <i className="fas fa-plus" style={{ marginRight: 8 }}></i>
+                Criar Mesa
+              </button>
+              <button className="table-btn" onClick={tableEnter}>
+                <i className="fas fa-door-open" style={{ marginRight: 8 }}></i>
+                Juntar-se à mesas
+              </button>
             </div>
             <div className="rpgTables">
               {loadingTables ? (
-                <p>
-                  <b>Carregando Mesas...</b>
-                </p>
+                <Loader />
               ) : (
                 tables.map((table) => (
                   <div
                     className="table"
-                    /* Necessário no React */
                     key={table.id}
-                    /* Adiciona o id da mesa desta div no estado selectedTableId, 
-                  que depois será buscada pela função selectedTable e mudará o 
-                  conteúdo da <main> automaticamente pcausa do tenário '!selectedTable ? (' */
                     onClick={() => setSelectedTableId(table.id)}
                   >
-                    <div className="tableName">{table.table}</div>
-                    <div className="tableSystem">{table.system}</div>
+                    <div className="tableName">
+                      <i
+                        className="fas fa-dice-d20"
+                        style={{ marginRight: 8 }}
+                      ></i>
+                      {table.table}
+                    </div>
+                    <div className="tableSystem">
+                      <i className="fas fa-book" style={{ marginRight: 8 }}></i>
+                      {table.system}
+                    </div>
                     <div className="tablePlayers">
-                      {/* Exemplo de CSS inline */}
+                      <i
+                        className="fas fa-user-friends"
+                        style={{ marginRight: 8 }}
+                      ></i>
                       <span style={{ fontWeight: "bold" }}>
                         {table.players.length === 0
                           ? "Sem Jogadores"
@@ -164,8 +199,8 @@ export default function HomePage() {
               ></i>
             </div>
             {/* Detalhes da mesa */}
-            <h1>{selectedTable.table}</h1>
-            <h4>{selectedTable.system}</h4>
+            <h1 className="table-h1">{selectedTable.table}</h1>
+            <h4 className="table-h4">{selectedTable.system}</h4>
             {/* Status dos jogadores */}
             <div className="players-container">
               {selectedTable.players.map((player) => (
@@ -192,7 +227,11 @@ export default function HomePage() {
             </div>
             <div className="dice-buttons">
               {selectedTable.dice.map((die, index) => (
-                <button key={index} onClick={() => rollDice(die)}>
+                <button
+                  className="table-btn"
+                  key={index}
+                  onClick={() => rollDice(die)}
+                >
                   1d{die}
                 </button>
               ))}
