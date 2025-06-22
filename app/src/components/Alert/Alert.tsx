@@ -46,4 +46,5 @@ export const Alert = {
     showAlert("info", message, options),
   confirm: (message: string, options?: AlertOptions) =>
     showAlert("question", message, { showCancelButton: true, ...options }),
+  fire: (options: Parameters<typeof Swal.fire>[0]) => Swal.fire(options),
 };

@@ -48,13 +48,30 @@ export default function HomePage() {
 
   if (!checked || !allowed) return <Loader />;
 
-  // Função que dispara modal dizendo que a funcionalidade ainda não está disponível
   const noReleased = () => {
     Alert.warning("Esta função ainda não foi criada neste protótipo.", {
       title: "Opa!",
       confirmButtonText: "Ok!",
       confirmButtonColor: "#8a2be2",
     });
+  };
+
+  const tableEnter = async () => {
+    const result = await Alert.fire({
+      title: "Entrar em uma mesa",
+      input: "text",
+      inputLabel: "Digite o código da mesa:",
+      inputPlaceholder: "Código da mesa",
+      confirmButtonText: "Entrar",
+      confirmButtonColor: "#8a2be2",
+      showCancelButton: true,
+      cancelButtonText: "Cancelar",
+      background: "#232136",
+      color: "#fff",
+    });
+    if (result.isConfirmed && result.value) {
+      Alert.success(`Código digitado: ${result.value}`, { title: "Sucesso" });
+    }
   };
 
   const selectedTable = tables?.find((t) => t.id === selectedTableId);
@@ -127,11 +144,8 @@ export default function HomePage() {
                 <i className="fas fa-plus" style={{ marginRight: 8 }}></i>
                 Criar Mesa
               </button>
-              <button className="table-btn" onClick={noReleased}>
-                <i
-                  className="fas fa-sign-in-alt"
-                  style={{ marginRight: 8 }}
-                ></i>
+              <button className="table-btn" onClick={tableEnter}>
+                <i className="fas fa-door-open" style={{ marginRight: 8 }}></i>
                 Juntar-se à mesas
               </button>
             </div>

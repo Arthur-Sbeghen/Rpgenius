@@ -207,7 +207,6 @@ const Auth: React.FC = () => {
             )}
           </div>
 
-          {/* Confirmação de senha (cadastro) */}
           {!isLogin && (
             <div className="input-group">
               <input
@@ -233,14 +232,14 @@ const Auth: React.FC = () => {
         </form>
 
         {isLogin && (
-          <p className="auth-subtext">
-            <button
+          <p className="auth-recover-text">
+            <a
               type="button"
-              className="auth-change"
-              onClick={() => router.push("/auth?tipo=recuperar")}
+              className="auth-recover"
+              href="/auth?tipo=recuperar"
             >
               Esqueceu a senha?
-            </button>
+            </a>
           </p>
         )}
 
