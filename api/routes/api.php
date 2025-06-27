@@ -8,28 +8,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']); // Adiciona registro de autenticação
-    Route::post('/login', [AuthController::class, 'login']); // Loga usuário
+    Route::post('register', [AuthController::class, 'register']); // Adiciona registro de autenticação
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:login'); // Loga usuário
+    Route::post('logout', [AuthController::class, 'logout']);
+
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']); // Encaminha instruções para recuperação do registro
     Route::post('/reset-password', [AuthController::class, 'resetPassword']); // Altera a senha do registro
     Route::post('/data', [AuthController::class, 'data']); // Mostra dados da autenticação (token)
 });
 
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware(['auth:sanctum'], 'throttle:user');
+
 Route::group([
     "middleware" => ["auth:sanctum"]
 ], function () {
     Route::get('profile', [AuthController::class, 'profile']);
-    Route::get('logout', [AuthController::class, 'logout']);
 });
 
-Route::prefix('tables')->middleware('auth:sanctum')->group(function () {
+Route::prefix('tables')->group(function () {
     Route::get('/', [MesaController::class, 'index']); // listagem
-    Route::get('/system/list', [MesaController::class, 'systems']); // Listagem de sistemas
     Route::get('/{id}', [MesaController::class, 'show']); // Listagem específica
     Route::post('/', [MesaController::class, 'store']); // Adiciona registro
     Route::put('/{id}', [MesaController::class, 'update']); // Altera registro
     Route::delete('/{id}', [MesaController::class, 'destroy']); // "Apaga" registro (softdelete)
-    Route::post('/enter', [MesaController::class, 'enter']); // Entra na mesa
 });
 
 Route::prefix('users')->group(function () {

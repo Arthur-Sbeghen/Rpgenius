@@ -2,30 +2,10 @@
 com o styled-components e globals.css. Esse estilo está sendo importado
 direto em /home/page.tsx */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Arial", sans-serif;
-}
-
-body {
-  background-color: #0a0a0a;
-  color: #ffffff;
-  text-align: center;
-  display: flex;
-  width: 100vw;
-  height: 100vh;
-  overflow-x: hidden;
-}
-
-.header {
-  position: fixed;
-  top: 0;
-  left: 0;
+.table-header {
   width: 100%;
   background-color: #121212;
-  padding: 10px 20px;
+  padding: 1em 2em;
   display: flex;
   align-items: center;
 }
@@ -88,20 +68,15 @@ body {
   background-color: #8a2be2;
 }
 
-main {
-  margin-top: 5em;
-  padding: 40px;
-  transition: margin-left 0.3s;
-  width: 100%;
+.table-main {
+  margin-top: 3em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   overflow-x: hidden;
 }
 
-h1 {
-  margin-bottom: 20px;
-  color: #ffffff;
-}
-
-button {
+.table-btn {
   background-color: #8a2be2;
   color: #ffffff;
   border: none;
@@ -114,7 +89,7 @@ button {
   transition: 0.3s;
 }
 
-button:hover {
+.table-btn:hover {
   background-color: #6a1bbf;
 }
 
@@ -124,6 +99,7 @@ button:hover {
   flex-wrap: wrap;
   gap: 20px;
   margin-top: 30px;
+  max-width: 100vw;
 }
 
 .table {
@@ -181,7 +157,9 @@ button:hover {
   scale: 1.2;
 }
 
-h1 {
+.table-h1 {
+  margin-bottom: 20px;
+  color: #ffffff;
   margin-top: 0.7em;
   font-size: 2.5em;
   text-shadow: 0 0 15px rgba(138, 43, 226, 0.7);
@@ -189,7 +167,7 @@ h1 {
   letter-spacing: 2px;
 }
 
-h4 {
+.table-h4 {
   color: #a970ff;
   font-size: 1.2em;
   margin-bottom: 40px;
@@ -203,6 +181,7 @@ h4 {
   gap: 30px;
   flex-wrap: wrap;
   margin: 30px 0;
+  max-width: 100vw;
 }
 
 .player {
@@ -375,43 +354,4 @@ h4 {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #6a1bbf;
-}
-
-.table-invite-code {
-  display: flex;
-  align-items: center;
-  font-size: 1.2rem;
-  background: #232136;
-  color: #c084fc;
-  border-radius: 8px;
-  padding: 8px 16px;
-  margin-bottom: 16px;
-  gap: 8px;
-}
-
-.copy-btn {
-  background: #8a2be2;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 10px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.2s;
-}
-.copy-btn:hover {
-  background: #c084fc;
-  color: #232136;
-}
-
-.no-players {
-  background: #2a273f;
-  color: #fff;
-  border-radius: 6px;
-  padding: 2em;
-  text-align: center;
-  font-size: 1.1rem;
-  font-style: italic;
-  margin: 12px 0;
-  box-shadow: 0 2px 8px #0002;
 }

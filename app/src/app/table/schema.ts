@@ -18,9 +18,8 @@ export type Player = {
 
 export type Table = {
   id: number;
-  name: string;
+  table: string;
   players: Player[];
   dice: number[];
   system: string;
-  invite_code: string;
 };
