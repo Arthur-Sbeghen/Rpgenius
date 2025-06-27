@@ -1,19 +1,17 @@
 "use client";
 
-import { api } from "@/lib/apiRequests";
+import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { Alert } from "@/components/Alert/Alert";
-import { usePathname } from "next/navigation";
-import { Toast } from "@/components/Toast/Toast";
+import Swal from "sweetalert2";
 
 interface AppProviderType {
   authToken: string | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (
-    login: string,
+    name: string,
     email: string,
     password: string,
     password_confirmation: string
@@ -23,11 +21,12 @@ interface AppProviderType {
 
 const AppContext = createContext<AppProviderType | undefined>(undefined);
 
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
+
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [authToken, setAuthToken] = useState<string | null>(null);
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     const token = Cookies.get("authToken");
@@ -35,7 +34,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     if (token) {
       setAuthToken(token);
     } else {
-      if (!pathname.includes("/auth") && !pathname.includes("/home")) {
+      if (
+        !window.location.pathname.includes("/auth") &&
+        !window.location.pathname.includes("/home")
+      ) {
         router.push("/auth");
       }
     }
@@ -65,7 +67,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await api.post(`/auth/login`, {
+      const response = await axios.post(`${API_URL}/login`, {
         email,
         password,
       });
@@ -73,17 +75,22 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       if (response.data.status) {
         Cookies.set("authToken", response.data.token, { expires: 1 });
         setAuthToken(response.data.token);
-        Toast.success("Login realizado com sucesso!");
+        localStorage.setItem("loginSuccess", "true");
+        router.push("/table");
       } else {
-        Alert.error("", {
-          html: formatErrorMessages(response.data.message),
+        await Swal.fire({
+          icon: "error",
           title: "Login inválido",
+          theme: "dark",
+          html: formatErrorMessages(response.data.message),
         });
       }
     } catch (error: any) {
-      Alert.error("", {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro no servidor",
+        theme: "dark",
         html: formatErrorMessages(error.response?.data),
-        title: "Opa!",
       });
     } finally {
       setIsLoading(false);
@@ -98,7 +105,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   ) => {
     setIsLoading(true);
     try {
-      const response = await api.post(`/auth/register`, {
+      const response = await axios.post(`${API_URL}/register`, {
         login,
         email,
         password,
@@ -106,20 +113,27 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       });
 
       if (response.data.status) {
-        Alert.success("Você já pode fazer login.", {
+        await Swal.fire({
+          icon: "success",
           title: "Cadastro realizado!",
+          theme: "dark",
+          text: "Você já pode fazer login.",
         });
         router.push("/auth?tipo=login");
       } else {
-        Alert.error("", {
-          html: formatErrorMessages(response.data.message),
+        await Swal.fire({
+          icon: "error",
           title: "Erro no cadastro",
+          theme: "dark",
+          html: formatErrorMessages(response.data.message),
         });
       }
     } catch (error: any) {
-      Alert.error("", {
+      await Swal.fire({
+        icon: "error",
+        title: "Erro no servidor",
+        theme: "dark",
         html: formatErrorMessages(error.response?.data),
-        title: "Opa!",
       });
     } finally {
       setIsLoading(false);
@@ -127,29 +141,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    try {
-      const token = Cookies.get("authToken");
-      const response = await api.post(
-        "/auth/logout",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.data.status) {
-        Toast.success("Você foi desconectado com sucesso!");
-      } else {
-        Toast.error("Erro ao desconectar. Por favor, tente novamente.");
-      }
-    } catch (error) {
-      Toast.error("Erro ao desconectar. Por favor, tente novamente.");
-    } finally {
-      setAuthToken(null);
-      Cookies.remove("authToken");
-      router.replace("/home");
+    setAuthToken(null);
+    Cookies.remove("authToken");
+    localStorage.setItem("logoutSuccess", "true");
+    if (window.location.pathname !== "/home") {
+      window.location.href = "/home";
     }
   };
 
