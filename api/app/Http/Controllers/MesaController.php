@@ -126,7 +126,7 @@ class MesaController extends Controller {
         $mesa = Table::where('invite_code', $validated['invite_code'])->first();
 
         if (!$mesa) {
-            return response()->json(['message' => 'Código de convite inválido'], 404);
+            return response()->json(['message' => 'Código de convite inválido!'], 404);
         }
 
         $isPlayer = Player::where('idUser', auth()->id())
@@ -134,7 +134,7 @@ class MesaController extends Controller {
             ->exists();
 
         if ($isPlayer) {
-            return response()->json(['message' => 'Você já está na mesa'], 400);
+            return response()->json(['message' => 'Você já está na mesa!'], 400);
         }
 
         $isMaster = Table::where('idMaster', auth()->id())
@@ -142,7 +142,13 @@ class MesaController extends Controller {
             ->exists();
         
         if ($isMaster) {
-            return response()->json(['message' => 'Você já é o mestre desta mesa'], 400);
+            return response()->json(['message' => 'Você já é o mestre desta mesa!'], 400);
+        }
+
+        $maxPlayers = $mesa->player_limit;
+
+        if (Player::where('idTable', $mesa->id)->count() >= $maxPlayers) {
+            return response()->json(['message' => 'A mesa está lotada!'], 403);
         }
 
         Player::create([

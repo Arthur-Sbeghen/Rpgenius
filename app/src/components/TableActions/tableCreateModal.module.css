@@ -219,7 +219,6 @@
   outline: none;
 }
 
-/* Marcadores do range */
 .rangeMarks {
   display: flex;
   justify-content: space-between;
