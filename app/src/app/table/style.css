@@ -376,3 +376,42 @@ h4 {
 ::-webkit-scrollbar-thumb:hover {
   background: #6a1bbf;
 }
+
+.table-invite-code {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  background: #232136;
+  color: #c084fc;
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.copy-btn {
+  background: #8a2be2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.copy-btn:hover {
+  background: #c084fc;
+  color: #232136;
+}
+
+.no-players {
+  background: #2a273f;
+  color: #fff;
+  border-radius: 6px;
+  padding: 2em;
+  text-align: center;
+  font-size: 1.1rem;
+  font-style: italic;
+  margin: 12px 0;
+  box-shadow: 0 2px 8px #0002;
+}

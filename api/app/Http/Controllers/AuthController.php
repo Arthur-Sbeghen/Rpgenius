@@ -82,6 +82,29 @@ class AuthController extends Controller {
     }
 
     public function logout (Request $request) {
+<<<<<<< Updated upstream
+=======
+        $token = $request->bearerToken();
+
+        if (!$token) {
+             return response()->json([
+                "token" => $token,
+                "status" => false,
+                "message" => "Credenciais não foram passadas corretamente",
+            ], 400);
+        }
+
+        $access_token = PersonalAccessToken::findToken($token);
+
+        if (!$access_token) {
+             return response()->json([
+                "status" => false,
+                "message" => "Credenciais não foram passadas corretamente",
+            ], 400);
+        }
+
+        $access_token->delete();
+>>>>>>> Stashed changes
         Auth::logout();
         return response()->json([
             "status" => true,
