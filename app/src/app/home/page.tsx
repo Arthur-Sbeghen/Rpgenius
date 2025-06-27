@@ -2,34 +2,49 @@
 
 import { useEffect } from "react";
 import "./style.css";
-import { Alert } from "@/components/Alert/Alert";
-import Link from "next/link";
+import Swal from "sweetalert2";
 
 export default function Home() {
+  useEffect(() => {
+    const logout = localStorage.getItem("logoutSuccess");
+    if (logout === "true") {
+      Swal.fire({
+        icon: "success",
+        title: "Você saiu com sucesso!",
+        theme: "dark",
+        timer: 4000,
+        showConfirmButton: false,
+        timerProgressBar: true,
+      });
+      localStorage.removeItem("logoutSuccess");
+    }
+  }, []);
+
   return (
     <>
-      <header className="home-header">
-        <h1 className="home-h1">RPGenius</h1>
+      <header>
+        <h1>RPGenius</h1>
         <section title="Opções">
           <ul className="options">
             <li>
-              <Link href="/auth" className="btn" id="btnEntrar">
+              <a href="/auth" className="btn" id="btnEntrar">
                 Entrar
-              </Link>
+              </a>
             </li>
             <li>
-              <Link href="/auth?tipo=cadastro" className="btn" id="btnCadastro">
+              <a href="/auth?tipo=cadastro" className="btn" id="btnCadastro">
                 Cadastrar-se
-              </Link>
+              </a>
             </li>
           </ul>
         </section>
       </header>
 
-      <main className="home-main">
+      <main>
         <div>
           <div className="apresentacao">
             <p className="f1">Suas campanhas de RPG em um só lugar!</p>
+            
           </div>
           <p className="f2">
             Com o Rpgenius, você pode criar e gerenciar fichas e mesas de RPG,
@@ -37,10 +52,10 @@ export default function Home() {
             e explore seu mundo com apoio do RPGenius!
           </p>
         </div>
-
+        
         <div className="funcionalidades">
           <div className="card">
-            <h3 className="home-h3">Crie mesas</h3>
+            <h3>Crie mesas</h3>
 
             <div className="cont">
               <p className="f">
@@ -49,12 +64,14 @@ export default function Home() {
                 como estão seus companheiros e salvar automaticamente sua ficha
                 ao longo da campanha.
               </p>
+              
             </div>
           </div>
           <div className="card">
-            <h3 className="home-h3">Gerencie suas fichas</h3>
+            <h3>Gerencie suas fichas</h3>
 
             <div className="cont">
+              
               <p className="f">
                 Crie as fichas dos seus personagens de modo rápido, com a nossa
                 ajuda para preencher as informações! Com nossos modelos de
@@ -66,8 +83,8 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="home-footer">
-        <p className="home-p">
+      <footer>
+        <p>
           Desenvolvido por Arthur Sbeghen, Enrico Parolin, Rômulo Girotto e
           Sarah Tumelero da Silveira
         </p>

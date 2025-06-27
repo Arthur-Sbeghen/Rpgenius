@@ -1,26 +1,9 @@
 /*link para uso da fonte*/
 @import url("https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap");
 
-* {
-  font-family: "Lexend Deca", sans-serif;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-body {
-  width: 100vw;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #1f1b2e;
-  color: white;
-}
-main {
-  flex: 1;
-  transition: margin-left 0.3s;
-  max-width: 100vw;
-  min-height: 100vh;
-}
+*{font-family: "Lexend Deca", sans-serif; margin: 0; padding: 0; box-sizing: border-box;}
+body{width: 100vw; min-height: 100vh; display: flex; flex-direction: column;}
+main{flex: 1;}
 
 :root {
   --background: #ffffff;
@@ -32,9 +15,4 @@ main {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
-
-html,
-body {
-  overflow-x: hidden;
 }
