@@ -27,12 +27,14 @@ Route::group([
     Route::get('profile', [AuthController::class, 'profile']);
 });
 
-Route::prefix('tables')->group(function () {
+Route::prefix('tables')->middleware('auth:sanctum')->group(function () {
     Route::get('/', [MesaController::class, 'index']); // listagem
+    Route::get('/system/list', [MesaController::class, 'systems']); // Listagem de sistemas
     Route::get('/{id}', [MesaController::class, 'show']); // Listagem específica
     Route::post('/', [MesaController::class, 'store']); // Adiciona registro
     Route::put('/{id}', [MesaController::class, 'update']); // Altera registro
     Route::delete('/{id}', [MesaController::class, 'destroy']); // "Apaga" registro (softdelete)
+    Route::post('/enter', [MesaController::class, 'enter']); // Entra na mesa
 });
 
 Route::prefix('users')->group(function () {

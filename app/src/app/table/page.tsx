@@ -10,6 +10,9 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import "./style.css";
 import Loader from "@/components/Loader/Loader";
+import { Toast } from "@/components/Toast/Toast";
+import { TableCreate } from "@/components/TableActions/TableCreate";
+import { TableEnter } from "@/components/TableActions/TableEnter";
 
 export default function HomePage() {
   const { logout } = myAppHook();
@@ -24,26 +27,28 @@ export default function HomePage() {
 
   // Busca as mesas com axios pelo endpoint '/api/tables' quando o DOM
   // é renderizado e armazena os dados no estado 'tables'
-  useEffect(() => {
+  const fetchTables = () => {
     const token = Cookies.get("authToken");
-
+    setLoadingTables(true);
     axios
       .get("/api/tables", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((res) => {
-        setTables(res.data);
-      })
+      .then((res) => setTables(res.data))
       .catch((error: any) => {
-        Alert.error("Não foi possível carregar suas mesas.", {
-          title: "Erro",
-        });
+        if (error.response) {
+          Toast.error(error.response.data.message);
+        } else {
+          Alert.error("Erro ao buscar mesas", { title: "Erro" });
+        }
       })
-      .finally(() => {
-        setLoadingTables(false);
-      });
+      .finally(() => setLoadingTables(false));
+  };
+
+  useEffect(() => {
+    fetchTables();
   }, []);
 
   if (!checked || !allowed) return <Loader />;
@@ -54,24 +59,6 @@ export default function HomePage() {
       confirmButtonText: "Ok!",
       confirmButtonColor: "#8a2be2",
     });
-  };
-
-  const tableEnter = async () => {
-    const result = await Alert.fire({
-      title: "Entrar em uma mesa",
-      input: "text",
-      inputLabel: "Digite o código da mesa:",
-      inputPlaceholder: "Código da mesa",
-      confirmButtonText: "Entrar",
-      confirmButtonColor: "#8a2be2",
-      showCancelButton: true,
-      cancelButtonText: "Cancelar",
-      background: "#232136",
-      color: "#fff",
-    });
-    if (result.isConfirmed && result.value) {
-      Alert.success(`Código digitado: ${result.value}`, { title: "Sucesso" });
-    }
   };
 
   const selectedTable = tables?.find((t) => t.id === selectedTableId);
@@ -132,7 +119,6 @@ export default function HomePage() {
           </ul>
         </nav>
       </header>
-
       {/* Acabou o header e a sidebar, agr é a main (visão de menu das mesas ou de mesa específica) */}
       <main className="table-main">
         {!selectedTable ? (
@@ -140,14 +126,8 @@ export default function HomePage() {
           <>
             <h1 className="table-h1">Suas Mesas de RPG!</h1>
             <div>
-              <button className="table-btn" onClick={noReleased}>
-                <i className="fas fa-plus" style={{ marginRight: 8 }}></i>
-                Criar Mesa
-              </button>
-              <button className="table-btn" onClick={tableEnter}>
-                <i className="fas fa-door-open" style={{ marginRight: 8 }}></i>
-                Juntar-se à mesas
-              </button>
+              <TableCreate onSuccess={fetchTables} />
+              <TableEnter onSuccess={fetchTables} />
             </div>
             <div className="rpgTables">
               {loadingTables ? (
@@ -164,7 +144,7 @@ export default function HomePage() {
                         className="fas fa-dice-d20"
                         style={{ marginRight: 8 }}
                       ></i>
-                      {table.table}
+                      {table.name}
                     </div>
                     <div className="tableSystem">
                       <i className="fas fa-book" style={{ marginRight: 8 }}></i>
@@ -176,11 +156,13 @@ export default function HomePage() {
                         style={{ marginRight: 8 }}
                       ></i>
                       <span style={{ fontWeight: "bold" }}>
-                        {table.players.length === 0
-                          ? "Sem Jogadores"
-                          : `${table.players.length} Jogador${
-                              table.players.length > 1 ? "es" : ""
-                            }`}
+                        {typeof table.players === "number"
+                          ? table.players === 0
+                            ? "Sem Jogadores"
+                            : `${table.players} Jogador${
+                                table.players > 1 ? "es" : ""
+                              }`
+                          : "-"}
                       </span>
                     </div>
                   </div>
@@ -199,25 +181,75 @@ export default function HomePage() {
               ></i>
             </div>
             {/* Detalhes da mesa */}
-            <h1 className="table-h1">{selectedTable.table}</h1>
+            <h1 className="table-h1">{selectedTable.name}</h1>
             <h4 className="table-h4">{selectedTable.system}</h4>
+            {selectedTable.isMaster ? (
+              <div className="table-master">
+                <div>
+                  <i className="fas fa-user" style={{ marginRight: 8 }}></i>
+                  Você é o mestre desta mesa!
+                </div>
+                <button
+                  className="table-btn"
+                  onClick={async () => {
+                    let confirmed = await Alert.confirm(
+                      "Tem certeza que deseja excluir esta mesa?",
+                      {
+                        title: "Excluir Mesa",
+                        confirmButtonText: "Sim, excluir",
+                        cancelButtonText: "Cancelar",
+                        confirmButtonColor: "#e74c3c",
+                        cancelButtonColor: "#8a2be2",
+                      }
+                    );
+                    if (confirmed) {
+                      axios
+                        .delete(`/api/tables/${selectedTable.id}`)
+                        .then(() => {
+                          Toast.success("Mesa excluída com sucesso!");
+                          setSelectedTableId(null);
+                          fetchTables();
+                        })
+                        .catch((error) => {
+                          if (error.response) {
+                            Toast.error(error.response.data.message);
+                          } else {
+                            Toast.error("Erro ao excluir mesa");
+                          }
+                        });
+                    }
+                  }}
+                >
+                  Excluir Mesa
+                </button>
+              </div>
+            ) : null}
+            <h4 className="table-invite-code">
+              <span>{selectedTable.invite_code}</span>
+              <button
+                className="copy-btn"
+                onClick={() => {
+                  navigator.clipboard.writeText(selectedTable.invite_code);
+                  Toast.success("Código copiado!");
+                }}
+                style={{ marginLeft: 12 }}
+                title="Copiar código"
+              >
+                <i className="fas fa-copy"></i>
+              </button>
+            </h4>
             {/* Status dos jogadores */}
             <div className="players-container">
-              {selectedTable.players.map((player) => (
-                <div className="player" key={player.id}>
-                  <h3>{player.name}</h3>
-                  <div className="player-attributes">
-                    {player.attributes.map((attribute, index) => (
-                      <div className="attribute" key={index}>
-                        <p>
-                          <strong>{attribute.name}:</strong>{" "}
-                          <span>{attribute.value}</span>
-                        </p>
-                      </div>
-                    ))}
+              {typeof selectedTable.players === "number" ? (
+                selectedTable.players === 0 ? (
+                  <div className="no-players">Sem Jogadores</div>
+                ) : (
+                  <div className="player-count">
+                    {selectedTable.players} Jogador
+                    {selectedTable.players > 1 ? "es" : ""}
                   </div>
-                </div>
-              ))}
+                )
+              ) : null}
             </div>
             <div className="animation-control">
               <label>

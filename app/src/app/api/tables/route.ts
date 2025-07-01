@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { api } from "@/lib/apiRequests";
 
 // Não tenho 100% de ctz dq eu estou fazendo. Mas essas normas podem ser consultadas em
@@ -7,15 +7,30 @@ import { api } from "@/lib/apiRequests";
 // O nome do arquivo route.ts e o nome das funções (GET, POST, PUT...) são
 // obrigatórios para que o Next possa reconhecer automaticamente handlers de API
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
   try {
-    const { data } = await api.get("/tables");
+    const { data } = await api.get("/tables", {
+      headers: {
+        Authorization: authHeader,
+      },
+    });
     return NextResponse.json(data);
   } catch (error: any) {
-    return NextResponse.json(
-      { message: "Erro ao buscar as mesas", error: error.message },
-      { status: 500 }
-    );
+    if (error.response) {
+      return NextResponse.json(
+        {
+          message: error.response.data?.message || "Erro ao buscar as mesas",
+          error: error.response.data,
+        },
+        { status: error.response.status }
+      );
+    } else {
+      return NextResponse.json(
+        { message: "Erro ao buscar as mesas", error: error.message },
+        { status: 500 }
+      );
+    }
   }
 }
 
