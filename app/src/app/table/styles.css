@@ -1,0 +1,66 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 87vw; /* desgraça de sidebar o estado vai ter que ficar aq */
+}
+
+.header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0 50px 0;
+}
+
+.header > div {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.tableActions-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.search-tables {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+}
+
+.search-tables input {
+  height: 40px;
+  width: 80%;
+  min-width: 200px;
+  background: #2b2b2b;
+  color: #fff;
+  font-size: 1rem;
+  font-size: large;
+}
+
+.search-tables button {
+  background-color: #1e1e1e;
+  height: 40px;
+  width: 20%;
+  min-width: 60px;
+  color: #8a2be2;
+}
+
+.tables {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
