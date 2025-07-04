@@ -7,9 +7,9 @@ import * as yup from "yup";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import { api } from "@/lib/apiRequests";
-import styles from "./tableCreateModal.module.css";
-import Loader from "../Loader/Loader";
-import { Toast } from "../Toast/Toast";
+import styles from "../tableCreateModal.module.css";
+import Loader from "../../Loader/Loader";
+import { Toast } from "../../Toast/Toast";
 import { useRouter } from "next/navigation";
 
 interface System {

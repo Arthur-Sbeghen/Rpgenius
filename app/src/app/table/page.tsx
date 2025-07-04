@@ -12,9 +12,9 @@ import "./style.css";
 import Loader from "@/components/Loader/Loader";
 import { Toast } from "@/components/Toast/Toast";
 
-import { TableCreate } from "@/components/TableActions/TableCreate";
+import { TableCreate } from "@/components/TableActions/TableCreate/TableCreate";
 import { TableEnter } from "@/components/TableActions/TableEnter";
-import { TableEditModal } from "@/components/TableActions/TableEditModal";
+import { TableEditModal } from "@/components/TableActions/TableEdit/TableEditModal";
 import { api } from "@/lib/apiRequests";
 import { TableDelete } from "@/components/TableActions/TableDelete";
 

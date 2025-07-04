@@ -7,10 +7,10 @@ import * as yup from "yup";
 import { Alert } from "@/components/Alert/Alert";
 import Cookies from "js-cookie";
 import { api } from "@/lib/apiRequests";
-import styles from "./tableCreateModal.module.css";
+import styles from "../tableCreateModal.module.css";
 import modalStyles from "./tableEditModal.module.css";
-import Loader from "../Loader/Loader";
-import { Toast } from "../Toast/Toast";
+import Loader from "../../Loader/Loader";
+import { Toast } from "../../Toast/Toast";
 
 interface TableEditModalProps {
   table: any;

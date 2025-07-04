@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TableCreateModal } from "./TableCreateModal";
-import styles from "./tableCreateModal.module.css";
+import styles from "../tableCreateModal.module.css";
 
 interface TableCreateProps {
   onSuccess?: () => void;
