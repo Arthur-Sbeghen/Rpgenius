@@ -1,0 +1,10 @@
+.loaderContainer {
+  padding: 32px;
+  text-align: center;
+}
+
+.loaderText {
+  color: #fff;
+  margin-top: 16px;
+  font-size: 1.1rem;
+}
