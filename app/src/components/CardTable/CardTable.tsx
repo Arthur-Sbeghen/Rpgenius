@@ -1,9 +1,7 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
 import {
   CardContainer,
-  DeleteButton,
   CardImage,
   CardBody,
   CardContent,
@@ -31,11 +29,7 @@ export function CardTable({
 }: CardTableProps) {
   return (
     <CardContainer>
-      <DeleteButton>
-        <Trash2 size={20} color="red" />
-      </DeleteButton>
       <CardImage src={image} />
-
       <CardBody>
         <CardContent>
           <Title>{title}</Title>

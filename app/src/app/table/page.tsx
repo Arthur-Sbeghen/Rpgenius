@@ -90,7 +90,7 @@ export default function HomePage() {
                   <CardTable
                     key={table.id}
                     title={table.name}
-                    image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTU-quPbAQMD3Ab9hegEbrrJBBAgfoW0aGIbw&s"
+                    image="https://res.cloudinary.com/teepublic/image/private/s--8PzLFaNc--/t_Resized%20Artwork/c_fit,g_north_west,h_954,w_954/co_000000,e_outline:35/co_000000,e_outline:inner_fill:35/co_ffffff,e_outline:35/co_ffffff,e_outline:inner_fill:35/co_bbbbbb,e_outline:3:1000/c_mpad,g_center,h_1260,w_1260/b_rgb:eeeeee/c_limit,f_auto,h_630,q_auto:good:420,w_630/v1574834919/production/designs/6919636_0.jpg"
                     system={table.system}
                     players={table.players}
                     onClick={() => {
