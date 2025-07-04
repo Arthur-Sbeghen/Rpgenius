@@ -6,8 +6,12 @@ import "./style.css";
 import { TableCreate } from "../TableActions/TableCreate";
 import { TableEnter } from "../TableActions/TableEnter";
 
-export function Sidebar() {
-  const [isOpen, setIsOpen] = useState(true);
+interface SidebarProps {
+  isClosed: boolean;
+  toggleSidebar: () => void;
+}
+
+export function Sidebar({ isClosed, toggleSidebar }: SidebarProps) {
   const [activeSubMenus, setActiveSubMenus] = useState<number[]>([]);
 
   const toggleSubMenu = (menu: number) => {
@@ -25,16 +29,11 @@ export function Sidebar() {
   };
 
   return (
-    <nav id="sidebar" className={isOpen ? "" : "close"}>
+    <nav id="sidebar" className={isClosed ? "close" : ""}>
       <ul>
         <li>
           <span className="logo">RPGenius</span>
-          <button
-            onClick={() => {
-              setIsOpen(!isOpen);
-            }}
-            id="toggle-btn"
-          >
+          <button onClick={toggleSidebar} id="toggle-btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="24px"
