@@ -7,9 +7,9 @@ import * as yup from "yup";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import { api } from "@/lib/apiRequests";
-import styles from "./tableCreateModal.module.css";
-import Loader from "../Loader/Loader";
-import { Toast } from "../Toast/Toast";
+import styles from "../tableCreateModal.module.css";
+import Loader from "../../Loader/Loader";
+import { Toast } from "../../Toast/Toast";
 import { useRouter } from "next/navigation";
 
 interface System {
@@ -20,6 +20,8 @@ interface System {
 interface TableCreateModalProps {
   onClose: () => void;
   onSuccess?: () => void;
+  systems: Array<{ id: number; name: string }>;
+  loadingSystems: boolean;
 }
 
 const tableSchema = yup.object().shape({
@@ -38,9 +40,12 @@ const tableSchema = yup.object().shape({
 
 type FormData = yup.InferType<typeof tableSchema>;
 
-export const TableCreateModal = ({ onClose, onSuccess }: TableCreateModalProps) => {
-  const [systems, setSystems] = useState<System[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export const TableCreateModal = ({
+  onClose,
+  onSuccess,
+  systems,
+  loadingSystems,
+}: TableCreateModalProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const router = useRouter();
 
@@ -65,29 +70,10 @@ export const TableCreateModal = ({ onClose, onSuccess }: TableCreateModalProps) 
   const handleDragStart = () => setIsDragging(true);
   const handleDragEnd = () => setIsDragging(false);
 
-  useEffect(() => {
-    const fetchSystems = async () => {
-      try {
-        const response = await api.get("/tables/system/list", {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("authToken")}`,
-          },
-        });
-        setSystems(response.data);
-      } catch (error) {
-        setSystems([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSystems();
-  }, []);
-
   const onSubmit = async (data: FormData) => {
     try {
       const response = await api.post(
-        "/tables/",
+        "/tables",
         {
           name: data.name,
           player_limit: data.playerLimit,
@@ -114,7 +100,7 @@ export const TableCreateModal = ({ onClose, onSuccess }: TableCreateModalProps) 
     }
   };
 
-  if (isLoading) {
+  if (loadingSystems) {
     return <Loader />;
   }
 
