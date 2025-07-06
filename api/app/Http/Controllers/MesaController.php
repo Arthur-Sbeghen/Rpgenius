@@ -116,53 +116,8 @@ class MesaController extends Controller {
 
         return response()->json(['message' => 'Mesa criada com sucesso!'], 201);
     }
-    public function update (Request $request, $id) {
-        $request->validate([
-            'name' => 'required|string|max:50',
-            'player_limit' => 'required|integer|min:1|max:10',
-        ]);
-
-        $mesa = Table::find($id);
-
-        if (!$mesa) {
-            return response()->json(['message' => 'Mesa não encontrada'], 404);
-        }
-
-        if ($mesa->idMaster !== auth()->id() && !Player::where('idTable', $mesa->id)->where('idUser', auth()->id())->exists()) {
-            return response()->json(['message' => 'Você não é o mestre desta mesa. Você não tem permissão para editá-la.'], 403);
-        }
-
-        if ($mesa->player_limit > $request->player_limit) {
-            $currentPlayers = Player::where('idTable', $mesa->id)->count();
-            if ($currentPlayers > $request->player_limit) {
-                return response()->json(['message' => 'Número de jogadores excede o novo limite. Não é possível inserir um limite inferior ao número atual de jogadores.'], 400);
-            }
-        }
-
-        $mesa->name = $request->name;
-        $mesa->player_limit = $request->player_limit;
-
-        if (!$mesa->save()) {
-            return response()->json(['message' => 'Erro ao atualizar mesa.'], 500);
-        }
-
-        return response()->json(['message' => 'Mesa atualizada com sucesso!'], 200);
-    }
-    public function destroy ($id) {
-        $mesa = Table::find($id);
-
-        if (!$mesa) {
-            return response()->json(['message' => 'Mesa não encontrada'], 404);
-        }
-
-        if ($mesa->idMaster !== auth()->id()) {
-            return response()->json(['message' => 'Você não é o mestre desta mesa. Você não tem permissão para excluí-la.'], 403);
-        }
-
-        $mesa->delete();
-
-        return response()->json(['message' => 'Mesa excluída com sucesso!'], 200);
-    }
+    public function update (Request $request, $id) {}
+    public function destroy ($id) {}
 
     public function enter (Request $request) {
         $validated = $request->validate([

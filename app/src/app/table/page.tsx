@@ -15,45 +15,28 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Loader from "@/components/Loader/Loader";
 import { Toast } from "@/components/Toast/Toast";
-import { TableCreate } from "@/components/TableActions/TableCreate/TableCreate";
-import { TableEnter } from "@/components/TableActions/TableEnter";
-import { TableEditModal } from "@/components/TableActions/TableEdit/TableEditModal";
-import { api } from "@/lib/apiRequests";
-import { TableDelete } from "@/components/TableActions/TableDelete";
 
-function TablePage() {
+export default function HomePage() {
   const { logout } = myAppHook();
+
   const { checked, allowed } = authCheck({ requireAuth: true });
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
   const [tables, setTables] = useState<Table[]>([]);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [loadingTables, setLoadingTables] = useState<boolean>(true);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [systems, setSystems] = useState<any[]>([]);
-  const [loadingSystems, setLoadingSystems] = useState<boolean>(true);
 
   const toggleSidebar = () => setIsSidebarClosed((prev) => !prev);
 
   const fetchTables = () => {
     const token = Cookies.get("authToken");
     setLoadingTables(true);
-
     axios
       .get("/api/tables", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((res) => {
-        setTables(res.data);
-
-        setSelectedTableId((prevId) => {
-          if (prevId && !res.data.find((t: any) => t.id === prevId)) {
-            return null;
-          }
-          return prevId;
-        });
-      })
+      .then((res) => setTables(res.data))
       .catch((error: any) => {
         if (error.response) {
           Toast.error(error.response.data.message);
@@ -65,25 +48,8 @@ function TablePage() {
   };
 
   useEffect(() => {
-    if (selectedTableId && !tables.find((t) => t.id === selectedTableId)) {
-      setSelectedTableId(null);
-    }
-  }, [tables, selectedTableId]);
-
-  // Busca sistemas de RPG uma única vez
-  useEffect(() => {
-    if (checked && allowed) {
-      fetchTables();
-      setLoadingSystems(true);
-      api
-        .get("/tables/system/list", {
-          headers: { Authorization: `Bearer ${Cookies.get("authToken")}` },
-        })
-        .then((res) => setSystems(res.data))
-        .catch(() => setSystems([]))
-        .finally(() => setLoadingSystems(false));
-    }
-  }, [checked, allowed]);
+    fetchTables();
+  }, []);
 
   if (!checked || !allowed) return <Loader />;
 
@@ -102,17 +68,11 @@ function TablePage() {
       <Sidebar isClosed={isSidebarClosed} toggleSidebar={toggleSidebar} />
       <div className={`container ${isSidebarClosed ? "large" : ""}`}>
         <div className="header">
-          <h1 className="table-h1">Suas Mesas de RPG!</h1>
+          <h1>Suas Mesas de RPG!</h1>
           <div>
             <div className="tableActions-buttons">
-              <TableCreate 
-                onSuccess={fetchTables}
-                systems={systems}
-                loadingSystems={loadingSystems}
-                />
-              <TableEnter 
-                onSuccess={fetchTables}
-                />
+              <TableCreate />
+              <TableEnter />
             </div>
             <div className="search-tables">
               <input type="text" />
@@ -139,64 +99,35 @@ function TablePage() {
                   />
                 ))
               )}
-            </div>
-          </>
-        ) : (
-          /* Se há uma tabela selecionada: */
-          <>
-            <div className="placeReturn">
-              <i
-                /* Recarrega a <main> como menu, flechinha de return */
-                onClick={() => setSelectedTableId(null)}
-                className="fa-solid fa-arrow-turn-up return"
-              ></i>
-            </div>
-            {/* Detalhes da mesa */}
-            <h1 className="table-h1">{selectedTable.name}</h1>
-            <h4 className="table-h4">{selectedTable.system}</h4>
-            {selectedTable.isMaster ? (
-              <div className="table-master">
-                <div>
-                  <i className="fas fa-crown" style={{ marginRight: 8 }}></i>
-                  Você é o mestre desta mesa!
-                </div>
-                <TableDelete
-                  tableId={selectedTable.id}
-                  onDeleted={() => window.location.reload()}
-                />
-                <button
-                  type="button"
-                  className="table-btn"
-                  onClick={() => setShowEditModal(true)}
-                >
-                  <i className="fas fa-edit" style={{ marginRight: 8 }}></i>
-                  Editar
-                </button>
+            </>
+          ) : (
+            <div className="table-show">
+              <div className="placeReturn">
+                <i
+                  /* Recarrega a <main> como menu, flechinha de return */
+                  onClick={() => setSelectedTableId(null)}
+                  className="fa-solid fa-arrow-turn-up return"
+                ></i>
               </div>
-            ) : null}
-            <h4 className="table-invite-code">
-              <span>{selectedTable.invite_code}</span>
-              <button
-                className="copy-btn"
-                onClick={() => {
-                  navigator.clipboard.writeText(selectedTable.invite_code);
-                  Toast.success("Código copiado!");
-                }}
-                style={{ marginLeft: 12 }}
-                title="Copiar código"
-              >
-                <i className="fas fa-copy"></i>
-              </button>
-            </h4>
-            {/* Status dos jogadores */}
-            <div className="players-container">
-              {typeof selectedTable.players === "number" ? (
-                selectedTable.players === 0 ? (
-                  <div className="no-players">Sem Jogadores</div>
-                ) : (
-                  <div className="player-count">
-                    {selectedTable.players} Jogador
-                    {selectedTable.players > 1 ? "es" : ""}
+              {/* Detalhes da mesa */}
+              <h1 className="table-h1">{selectedTable.name}</h1>
+              <h4 className="table-h4">{selectedTable.system}</h4>
+              {selectedTable.isMaster ? (
+                <div
+                  className="table-master"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    border: "1px solid #5f1ba8",
+                    gap: "10px",
+                    padding: "10px",
+                    margin: "10px",
+                  }}
+                >
+                  <div>
+                    <i className="fas fa-user" style={{ marginRight: 8 }}></i>
+                    Você é o mestre desta mesa!
                   </div>
                   <button
                     className="table-btn"
@@ -281,24 +212,13 @@ function TablePage() {
                 (Clique nos botões para rolar)
               </div>
             </div>
-            {showEditModal && (
-              <TableEditModal
-                table={selectedTable}
-                onClose={() => setShowEditModal(false)}
-                onSuccess={() => {
-                  setShowEditModal(false);
-                  fetchTables();
-                }}
-                systems={systems}
-                loadingSystems={loadingSystems}
-              />
-            )}
-          </>
-        )}
-      </main>
+          )}
+        </div>
+      </div>
     </>
   );
 }
+
 // Copiado e colado do prototipo
 function rollDice(sides: number) {
   const resultDiv = document.getElementById("roll-results");
@@ -332,6 +252,3 @@ function showResult(sides: number, resultDiv: HTMLElement) {
     <p class="dice-result-text">Rolagem: 1d${sides} = ${roll}</p>
   `;
 }
-
-// Export default the page component
-export default TablePage;
