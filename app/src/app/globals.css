@@ -15,6 +15,7 @@ body {
   background-color: #1f1b2e;
   color: white;
 }
+
 main {
   flex: 1;
   transition: margin-left 0.3s;

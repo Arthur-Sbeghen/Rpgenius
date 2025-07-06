@@ -18,8 +18,10 @@ export type Player = {
 
 export type Table = {
   id: number;
-  table: string;
+  name: string;
   players: Player[];
   dice: number[];
   system: string;
+  invite_code: string;
+  isMaster: boolean;
 };

@@ -11,6 +11,7 @@ interface AlertOptions {
   showCancelButton?: boolean;
   showConfirmButton?: boolean;
   timer?: number;
+  cancelButtonColor?: string;
   timerProgressBar?: boolean;
   confirmButtonColor?: string;
   html?: string;

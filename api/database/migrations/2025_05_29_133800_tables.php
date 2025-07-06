@@ -12,10 +12,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('tables', function (Blueprint $table) {
-            $table->id(); 
+            $table->id();
+            $table->string('invite_code', 8)->unique();
             $table->string('name');
             $table->unsignedBigInteger('idMaster');
             $table->text('image')->nullable();
+            $table->integer('player_limit')->default(5)->max(10)->min(1);
             $table->unsignedBigInteger('idSystem')->nullable(); 
             $table->foreign('idMaster')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('idSystem')->references('id')->on('systems')->onDelete('set null');
