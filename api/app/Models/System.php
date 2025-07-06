@@ -9,6 +9,10 @@ class System extends Model
     protected $fillable = [
         'name',
         'variables',
-        'description',
     ];
+
+    protected $casts = [
+    'variables' => 'array',
+];
+
 }
