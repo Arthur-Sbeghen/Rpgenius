@@ -7,9 +7,9 @@ import * as yup from "yup";
 import Swal from "sweetalert2";
 import Cookies from "js-cookie";
 import { api } from "@/lib/apiRequests";
-import styles from "./tableCreateModal.module.css";
-import Loader from "../Loader/Loader";
-import { Toast } from "../Toast/Toast";
+import styles from "../tableCreateModal.module.css";
+import Loader from "../../Loader/Loader";
+import { Toast } from "../../Toast/Toast";
 import { useRouter } from "next/navigation";
 
 interface System {
@@ -20,6 +20,8 @@ interface System {
 interface TableCreateModalProps {
   onClose: () => void;
   onSuccess?: () => void;
+  systems: Array<{ id: number; name: string }>;
+  loadingSystems: boolean;
 }
 
 const tableSchema = yup.object().shape({
@@ -38,7 +40,10 @@ const tableSchema = yup.object().shape({
 
 type FormData = yup.InferType<typeof tableSchema>;
 
-export const TableCreateModal = ({ onClose, onSuccess }: TableCreateModalProps) => {
+export const TableCreateModal = ({
+  onClose,
+  onSuccess,
+}: TableCreateModalProps) => {
   const [systems, setSystems] = useState<System[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDragging, setIsDragging] = useState(false);

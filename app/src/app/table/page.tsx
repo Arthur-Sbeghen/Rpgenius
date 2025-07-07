@@ -29,6 +29,9 @@ export default function HomePage() {
   const [tables, setTables] = useState<Table[]>([]);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [loadingTables, setLoadingTables] = useState<boolean>(true);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [systems, setSystems] = useState<any[]>([]);
+  const [loadingSystems, setLoadingSystems] = useState<boolean>(true);
 
   const toggleSidebar = () => setIsSidebarClosed((prev) => !prev);
 
