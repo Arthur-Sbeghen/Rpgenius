@@ -8,7 +8,6 @@ class Table extends Model {
     protected $fillable = [
         'name',
         'player_limit',
-        'idSystem',
         'invite_code',
         'idMaster'
     ];

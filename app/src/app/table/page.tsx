@@ -56,8 +56,25 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    fetchTables();
-  }, []);
+    if (selectedTableId && !tables.find((t) => t.id === selectedTableId)) {
+      setSelectedTableId(null);
+    }
+  }, [tables, selectedTableId]);
+
+  // Busca sistemas de RPG uma única vez
+  useEffect(() => {
+    if (checked && allowed) {
+      fetchTables();
+      setLoadingSystems(true);
+      api
+        .get("/tables/system/list", {
+          headers: { Authorization: `Bearer ${Cookies.get("authToken")}` },
+        })
+        .then((res) => setSystems(res.data))
+        .catch(() => setSystems([]))
+        .finally(() => setLoadingSystems(false));
+    }
+  }, [checked, allowed]);
 
   if (!checked || !allowed) return <Loader />;
 
