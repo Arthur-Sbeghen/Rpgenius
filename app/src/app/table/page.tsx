@@ -3,8 +3,6 @@
 import { CardTable } from "@/components/CardTable/CardTable";
 import "./styles.css";
 import Sidebar from "@/components/Sidebar/Sidebar";
-import { TableCreate } from "@/components/TableActions/TableCreate";
-import { TableEnter } from "@/components/TableActions/TableEnter";
 
 import { useEffect, useState } from "react";
 import { Alert } from "@/components/Alert/Alert";
@@ -15,6 +13,13 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import Loader from "@/components/Loader/Loader";
 import { Toast } from "@/components/Toast/Toast";
+import { TableCreate } from "@/components/TableActions/TableCreate/TableCreate";
+import { TableEnter } from "@/components/TableActions/TableEnter";
+import { TableEditModal } from "@/components/TableActions/TableEdit/TableEditModal";
+import { api } from "@/lib/apiRequests";
+import { TableDelete } from "@/components/TableActions/TableDelete";
+import PlayerRemove from "@/components/TableActions/RemoveFromTable";
+import TableLeave from "@/components/TableActions/TableLeave";
 
 export default function HomePage() {
   const { logout } = myAppHook();
@@ -27,8 +32,8 @@ export default function HomePage() {
 
   const toggleSidebar = () => setIsSidebarClosed((prev) => !prev);
 
+  const token = Cookies.get("authToken");
   const fetchTables = () => {
-    const token = Cookies.get("authToken");
     setLoadingTables(true);
     axios
       .get("/api/tables", {
@@ -67,19 +72,25 @@ export default function HomePage() {
     <>
       <Sidebar isClosed={isSidebarClosed} toggleSidebar={toggleSidebar} />
       <div className={`container ${isSidebarClosed ? "large" : ""}`}>
-        <div className="header">
-          <h1>Suas Mesas de RPG!</h1>
-          <div>
-            <div className="tableActions-buttons">
-              <TableCreate />
-              <TableEnter />
-            </div>
-            <div className="search-tables">
-              <input type="text" />
-              <button>Buscar</button>
+        {!selectedTable && (
+          <div className="header">
+            <h1 className="table-h1">Suas Mesas de RPG!</h1>
+            <div>
+              <div className="tableActions-buttons">
+                <TableCreate
+                  onSuccess={fetchTables}
+                  systems={systems}
+                  loadingSystems={loadingSystems}
+                />
+                <TableEnter onSuccess={fetchTables} />
+              </div>
+              <div className="search-tables">
+                <input type="text" />
+                <button>Buscar</button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="tables">
           {!selectedTable ? (
             <>
@@ -92,7 +103,7 @@ export default function HomePage() {
                     title={table.name}
                     image="https://res.cloudinary.com/teepublic/image/private/s--8PzLFaNc--/t_Resized%20Artwork/c_fit,g_north_west,h_954,w_954/co_000000,e_outline:35/co_000000,e_outline:inner_fill:35/co_ffffff,e_outline:35/co_ffffff,e_outline:inner_fill:35/co_bbbbbb,e_outline:3:1000/c_mpad,g_center,h_1260,w_1260/b_rgb:eeeeee/c_limit,f_auto,h_630,q_auto:good:420,w_630/v1574834919/production/designs/6919636_0.jpg"
                     system={table.system}
-                    players={table.players}
+                    players={table.num_players}
                     onClick={() => {
                       setSelectedTableId(table.id);
                     }}
@@ -104,113 +115,138 @@ export default function HomePage() {
             <div className="table-show">
               <div className="placeReturn">
                 <i
-                  /* Recarrega a <main> como menu, flechinha de return */
                   onClick={() => setSelectedTableId(null)}
-                  className="fa-solid fa-arrow-turn-up return"
+                  className="fa-solid fa-arrow-left return"
                 ></i>
               </div>
-              {/* Detalhes da mesa */}
-              <h1 className="table-h1">{selectedTable.name}</h1>
-              <h4 className="table-h4">{selectedTable.system}</h4>
+
+              <div className="table-header">
+                <h1 className="table-h1">{selectedTable.name}</h1>
+                <h4 className="table-h4">{selectedTable.system}</h4>
+              </div>
+
               {selectedTable.isMaster ? (
-                <div
-                  className="table-master"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    border: "1px solid #5f1ba8",
-                    gap: "10px",
-                    padding: "10px",
-                    margin: "10px",
-                  }}
-                >
-                  <div>
-                    <i className="fas fa-user" style={{ marginRight: 8 }}></i>
-                    Você é o mestre desta mesa!
+                <div className="table-master">
+                  <div className="meta-card">
+                    <h3>Status</h3>
+                    <p>
+                      <i className="fas fa-crown"></i> Mestre
+                    </p>
                   </div>
+                  <div className="table-actions">
+                    <button
+                      type="button"
+                      className="table-btn"
+                      onClick={() => setShowEditModal(true)}
+                    >
+                      <i className="fas fa-edit"></i> Editar
+                    </button>
+                    <TableDelete
+                      tableId={selectedTable.id}
+                      onDeleted={() => window.location.reload()}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <TableLeave
+                    tableId={selectedTable.id}
+                    onLeft={() => window.location.reload()}
+                  />
+                </>
+              )}
+
+              <div className="invite-section">
+                <h3>Código de Convite</h3>
+                <div className="invite-code-container">
+                  <span className="invite-code">
+                    {selectedTable.invite_code}
+                  </span>
                   <button
-                    className="table-btn"
-                    onClick={async () => {
-                      let confirmed = await Alert.confirm(
-                        "Tem certeza que deseja excluir esta mesa?",
-                        {
-                          title: "Excluir Mesa",
-                          confirmButtonText: "Sim, excluir",
-                          cancelButtonText: "Cancelar",
-                          confirmButtonColor: "#e74c3c",
-                          cancelButtonColor: "#8a2be2",
-                        }
-                      );
-                      if (confirmed) {
-                        axios
-                          .delete(`/api/tables/${selectedTable.id}`)
-                          .then(() => {
-                            Toast.success("Mesa excluída com sucesso!");
-                            setSelectedTableId(null);
-                            fetchTables();
-                          })
-                          .catch((error) => {
-                            if (error.response) {
-                              Toast.error(error.response.data.message);
-                            } else {
-                              Toast.error("Erro ao excluir mesa");
-                            }
-                          });
-                      }
+                    className="copy-btn"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selectedTable.invite_code);
+                      Toast.success("Código copiado!");
                     }}
+                    title="Copiar código"
                   >
-                    Excluir Mesa
+                    <i className="fas fa-copy"></i> Copiar
                   </button>
                 </div>
-              ) : null}
-              <h4 className="table-invite-code">
-                <span>{selectedTable.invite_code}</span>
-                <button
-                  className="copy-btn"
-                  onClick={() => {
-                    navigator.clipboard.writeText(selectedTable.invite_code);
-                    Toast.success("Código copiado!");
-                  }}
-                  style={{ marginLeft: 12 }}
-                  title="Copiar código"
-                >
-                  <i className="fas fa-copy"></i>
-                </button>
-              </h4>
-              {/* Status dos jogadores */}
-              <div className="players-container">
-                {typeof selectedTable.players === "number" ? (
-                  selectedTable.players === 0 ? (
+              </div>
+
+              <div className="players-section">
+                <h3 className="section-title">Jogadores</h3>
+                {typeof selectedTable.num_players === "number" ? (
+                  selectedTable.num_players === 0 ? (
                     <div className="no-players">Sem Jogadores</div>
                   ) : (
-                    <div className="player-count">
-                      {selectedTable.players} Jogador
-                      {selectedTable.players > 1 ? "es" : ""}
+                    <div className="players-grid">
+                      {selectedTable.players.map((player, index) => (
+                        <div className="player-card" key={index}>
+                          <div className="player-avatar">
+                            <i className="fas fa-user"></i>
+                          </div>
+                          <div className="player-name">{player.login}</div>
+                          <div className="player-role">Participante</div>
+                          {selectedTable.isMaster && (
+                            <PlayerRemove
+                              playerId={player.id}
+                              tableId={selectedTable.id}
+                              onRemoved={() => {
+                                fetchTables();
+                              }}
+                            />
+                          )}
+                        </div>
+                      ))}
                     </div>
                   )
                 ) : null}
               </div>
-              <div className="animation-control">
-                <label>
-                  <input type="checkbox" id="animationToggle" defaultChecked />{" "}
-                  Mostrar animação?
-                </label>
+
+              <div className="dice-section">
+                <h3 className="section-title">Rolagem de Dados</h3>
+                <div className="animation-control">
+                  <label>
+                    <input
+                      type="checkbox"
+                      id="animationToggle"
+                      defaultChecked
+                    />{" "}
+                    Mostrar animação?
+                  </label>
+                </div>
+                <div className="dice-controls">
+                  {selectedTable.dice.map((die, index) => (
+                    <button
+                      className="dice-btn"
+                      key={index}
+                      onClick={() => rollDice(die)}
+                    >
+                      1d{die}
+                    </button>
+                  ))}
+                </div>
+                <div className="roll-results-container">
+                  <div id="roll-results" className="roll-results">
+                    (Clique nos botões para rolar)
+                  </div>
+                </div>
               </div>
-              <div className="dice-buttons">
-                {selectedTable.dice.map((die, index) => (
-                  <button
-                    className="table-btn"
-                    key={index}
-                    onClick={() => rollDice(die)}
-                  >
-                    1d{die}
-                  </button>
-                ))}
-              </div>
-              <div id="roll-results" className="roll-results">
-                (Clique nos botões para rolar)
-              </div>
+
+              {showEditModal && (
+                <TableEditModal
+                  table={selectedTable}
+                  onClose={() => setShowEditModal(false)}
+                  onSuccess={() => {
+                    setShowEditModal(false);
+                    fetchTables();
+                  }}
+                  systems={systems}
+                  loadingSystems={loadingSystems}
+                />
+              )}
             </div>
           )}
         </div>
@@ -219,7 +255,6 @@ export default function HomePage() {
   );
 }
 
-// Copiado e colado do prototipo
 function rollDice(sides: number) {
   const resultDiv = document.getElementById("roll-results");
   const checkbox = document.getElementById(

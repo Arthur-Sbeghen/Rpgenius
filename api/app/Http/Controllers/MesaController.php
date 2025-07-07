@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Table;
 use App\Models\Player;
 use App\Models\System;
+use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -34,7 +35,9 @@ class MesaController extends Controller {
                 'id' => $mesa->id,
                 'isMaster' => $mesa->idMaster === auth()->id(),
                 'name' => $mesa->name,
-                'players' => Player::where('idTable', $mesa->id)->count(),
+                'player_limit' => $mesa->player_limit,
+                'num_players' => Player::where('idTable', $mesa->id)->count(),
+                'players' => User::whereIn('id', Player::where('idTable', $mesa->id)->pluck('idUser'))->get(['login', 'id']),
                 'system' => System::find($mesa->idSystem)->name,
                 'dice' => [6, 20, 100],
                 'invite_code' => $mesa->invite_code
@@ -153,5 +156,53 @@ class MesaController extends Controller {
         ]);
 
         return response()->json(['message' => 'Você entrou na mesa com sucesso!'], 200);
+    }
+
+    public function removePlayer($id, $playerId) {
+        $mesa = Table::find($id);
+
+        if (!$mesa) {
+            return response()->json(['message' => 'Mesa não encontrada'], 404);
+        }
+
+        if ($mesa->idMaster !== auth()->id()) {
+            return response()->json(['message' => 'Você não é o mestre desta mesa. Você não tem permissão para remover jogadores.'], 403);
+        }
+
+        $player = Player::where('idTable', $mesa->id)->where('idUser', $playerId)->first();
+
+        if (!$player) {
+            return response()->json(['message' => 'Jogador não encontrado na mesa'], 404);
+        }
+
+        $player->delete();
+
+        return response()->json(['message' => 'Jogador removido com sucesso!'], 200);
+    }
+
+    public function leave ($id) {
+        $mesa = Table::find($id);
+        
+        if (!$mesa) {
+            return response()->json(['message' => 'Mesa não encontrada'], 404);
+        }
+
+        $player = Player::where('idTable', $mesa->id)->where('idUser', auth()->id())->first();
+
+        if (!$player) {
+            return response()->json(['message' => 'Você não está na mesa'], 404);
+        }
+
+        $mestre = Table::where('idMaster', auth()->id())
+            ->where('id', $mesa->id)
+            ->exists();
+        
+        if ($mestre) {
+            return response()->json(['message' => 'Você é o mestre desta mesa. Você não pode sair dela.'], 403);
+        }
+
+        $player->delete();
+
+        return response()->json(['message' => 'Você saiu da mesa com sucesso!'], 200);
     }
 }

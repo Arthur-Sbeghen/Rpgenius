@@ -11,8 +11,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ isClosed, toggleSidebar }: SidebarProps) {
-
-  const {logout} = myAppHook();
+  const { logout } = myAppHook();
 
   // const [activeSubMenus, setActiveSubMenus] = useState<number[]>([]);
 
@@ -36,19 +35,26 @@ export function Sidebar({ isClosed, toggleSidebar }: SidebarProps) {
         <li>
           <span className="logo">RPGenius</span>
           <button onClick={toggleSidebar} id="toggle-btn">
-            <i className={isClosed ? 'fa-solid fa-angles-left fa-rotate-180' : 'fa-solid fa-angles-left'} style={{color: '#ffffff'}}></i>
+            <i
+              className={
+                isClosed
+                  ? "fa-solid fa-angles-left fa-rotate-180"
+                  : "fa-solid fa-angles-left"
+              }
+              style={{ color: "#ffffff" }}
+            ></i>
           </button>
         </li>
         <li className="active">
           <a href="/home">
             <i className="fa-solid fa-house"></i>
-            <span className={isClosed ? 'span-hidden' : ''}>Home</span>
+            <span className={isClosed ? "span-hidden" : ""}>Home</span>
           </a>
         </li>
         <li>
           <a href="/table">
             <i className="fa-solid fa-dice-d20"></i>
-            <span className={isClosed ? 'span-hidden' : ''}>Dashboard</span>
+            <span className={isClosed ? "span-hidden" : ""}>Dashboard</span>
           </a>
         </li>
         {/* <li>
@@ -91,13 +97,13 @@ export function Sidebar({ isClosed, toggleSidebar }: SidebarProps) {
         <li>
           <a href="profile.html">
             <i className="fa-solid fa-user"></i>
-            <span className={isClosed ? 'span-hidden' : ''}>Profile</span>
+            <span className={isClosed ? "span-hidden" : ""}>Profile</span>
           </a>
         </li>
         <li>
           <a onClick={logout}>
             <i className="fa-solid fa-right-from-bracket fa-rotate-180"></i>
-            <span className={isClosed ? 'span-hidden' : ''}>Sair</span>
+            <span className={isClosed ? "span-hidden" : ""}>Sair</span>
           </a>
         </li>
       </ul>

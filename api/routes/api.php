@@ -35,6 +35,8 @@ Route::prefix('tables')->middleware('auth:sanctum')->group(function () {
     Route::put('/{id}', [MesaController::class, 'update']); // Altera registro
     Route::delete('/{id}', [MesaController::class, 'destroy']); // "Apaga" registro (softdelete)
     Route::post('/enter', [MesaController::class, 'enter']); // Entra na mesa
+    Route::post('/{id}/remove/{playerId}', [MesaController::class, 'removePlayer']);
+    Route::post('/{id}/leave', [MesaController::class, 'leave']);
 });
 
 Route::prefix('users')->group(function () {
