@@ -1,18 +1,8 @@
 import React, { useState } from "react";
 import { TableCreateModal } from "./TableCreateModal";
-import styles from "../tableCreateModal.module.css";
+import styles from "./tableCreateModal.module.css";
 
-interface TableCreateProps {
-  onSuccess?: () => void;
-  systems: Array<{ id: number; name: string }>;
-  loadingSystems: boolean;
-}
-
-export function TableCreate({
-  onSuccess,
-  systems,
-  loadingSystems,
-}: TableCreateProps) {
+export function TableCreate({ onSuccess }: { onSuccess?: () => void }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -29,8 +19,6 @@ export function TableCreate({
         <TableCreateModal
           onClose={() => setIsModalOpen(false)}
           onSuccess={onSuccess}
-          systems={systems}
-          loadingSystems={loadingSystems}
         />
       )}
     </>

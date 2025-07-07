@@ -21,39 +21,27 @@ import { TableDelete } from "@/components/TableActions/TableDelete";
 import PlayerRemove from "@/components/TableActions/RemoveFromTable";
 import TableLeave from "@/components/TableActions/TableLeave";
 
-function TablePage() {
+export default function HomePage() {
   const { logout } = myAppHook();
+
   const { checked, allowed } = authCheck({ requireAuth: true });
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
   const [tables, setTables] = useState<Table[]>([]);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [loadingTables, setLoadingTables] = useState<boolean>(true);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [systems, setSystems] = useState<any[]>([]);
-  const [loadingSystems, setLoadingSystems] = useState<boolean>(true);
 
   const toggleSidebar = () => setIsSidebarClosed((prev) => !prev);
 
   const token = Cookies.get("authToken");
   const fetchTables = () => {
     setLoadingTables(true);
-
     axios
       .get("/api/tables", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((res) => {
-        setTables(res.data);
-
-        setSelectedTableId((prevId) => {
-          if (prevId && !res.data.find((t: any) => t.id === prevId)) {
-            return null;
-          }
-          return prevId;
-        });
-      })
+      .then((res) => setTables(res.data))
       .catch((error: any) => {
         if (error.response) {
           Toast.error(error.response.data.message);
@@ -65,25 +53,8 @@ function TablePage() {
   };
 
   useEffect(() => {
-    if (selectedTableId && !tables.find((t) => t.id === selectedTableId)) {
-      setSelectedTableId(null);
-    }
-  }, [tables, selectedTableId]);
-
-  // Busca sistemas de RPG uma única vez
-  useEffect(() => {
-    if (checked && allowed) {
-      fetchTables();
-      setLoadingSystems(true);
-      api
-        .get("/tables/system/list", {
-          headers: { Authorization: `Bearer ${Cookies.get("authToken")}` },
-        })
-        .then((res) => setSystems(res.data))
-        .catch(() => setSystems([]))
-        .finally(() => setLoadingSystems(false));
-    }
-  }, [checked, allowed]);
+    fetchTables();
+  }, []);
 
   if (!checked || !allowed) return <Loader />;
 
@@ -316,6 +287,3 @@ function showResult(sides: number, resultDiv: HTMLElement) {
     <p class="dice-result-text">Rolagem: 1d${sides} = ${roll}</p>
   `;
 }
-
-// Export default the page component
-export default TablePage;
