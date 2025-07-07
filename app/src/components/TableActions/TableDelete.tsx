@@ -29,8 +29,7 @@ export function TableDelete({
         cancelButtonColor: "#8a2be2",
       }
     );
-
-    if (confirmed) {
+    if (confirmed.isConfirmed) {
       try {
         await api.post(
           `/tables/delete/${tableId}`,

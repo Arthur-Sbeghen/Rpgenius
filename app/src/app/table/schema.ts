@@ -12,13 +12,15 @@ export type Attribute = {
 
 export type Player = {
   id: number;
-  name: string;
+  login: string;
   attributes: Attribute[]; // Array de types Attribute
 };
 
 export type Table = {
   id: number;
   name: string;
+  num_players: number;
+  player_limit: number;
   players: Player[];
   dice: number[];
   system: string;

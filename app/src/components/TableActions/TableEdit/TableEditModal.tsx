@@ -53,7 +53,7 @@ export const TableEditModal = ({
     resolver: yupResolver(tableSchema),
     defaultValues: {
       name: table.name,
-      playerLimit: table.player_limit || table.playerLimit || 5,
+      playerLimit: table.player_limit ?? table.playerLimit ?? 5,
     },
   });
 

@@ -10,13 +10,12 @@ import {
   Creator,
 } from "./styles";
 import { Button } from "../Button/Button";
-import { Player } from "@/app/table/schema";
 
 type CardTableProps = {
   title: string;
   image: string;
   system: string;
-  players: Player[];
+  players: number;
   onClick?: () => void;
 };
 
