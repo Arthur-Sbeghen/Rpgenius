@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import styles from "./tableCreateModal.module.css";
 import { api } from "@/lib/apiRequests";
 import { Toast } from "@/components/Toast/Toast";
 import { Alert } from "@/components/Alert/Alert";
@@ -54,9 +55,9 @@ export function PlayerRemove({
   }
 
   return (
-    <button className={className ?? "player-btn"} onClick={handleRemove}>
+    <button className={className ?? styles.playerBtn} onClick={handleRemove}>
       <i className="fas fa-user-minus" style={{ marginRight: 8 }}></i>
-      Remover
+      Expulsar
     </button>
   );
 }

@@ -20,8 +20,9 @@ import { api } from "@/lib/apiRequests";
 import { TableDelete } from "@/components/TableActions/TableDelete";
 import PlayerRemove from "@/components/TableActions/RemoveFromTable";
 import TableLeave from "@/components/TableActions/TableLeave";
+import { CharacterCreateModal } from "@/components/CharacterCreate/CharacterCreateModal";
 
-export default function HomePage() {
+export default function TablePage() {
   const { logout } = myAppHook();
 
   const { checked, allowed } = authCheck({ requireAuth: true });
@@ -30,6 +31,7 @@ export default function HomePage() {
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [loadingTables, setLoadingTables] = useState<boolean>(true);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showCharacterModal, setShowCharacterModal] = useState(false);
   const [systems, setSystems] = useState<any[]>([]);
   const [loadingSystems, setLoadingSystems] = useState<boolean>(true);
 
@@ -38,7 +40,7 @@ export default function HomePage() {
   const token = Cookies.get("authToken");
   const fetchTables = () => {
     setLoadingTables(true);
-    axios
+    const response = axios
       .get("/api/tables", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -172,6 +174,7 @@ export default function HomePage() {
                   <TableLeave
                     tableId={selectedTable.id}
                     onLeft={() => window.location.reload()}
+                    className="leave-btn"
                   />
                 </>
               )}
@@ -216,6 +219,7 @@ export default function HomePage() {
                               onRemoved={() => {
                                 fetchTables();
                               }}
+                              className="player-btn"
                             />
                           )}
                         </div>
@@ -225,35 +229,19 @@ export default function HomePage() {
                 ) : null}
               </div>
 
-              <div className="dice-section">
-                <h3 className="section-title">Rolagem de Dados</h3>
-                <div className="animation-control">
-                  <label>
-                    <input
-                      type="checkbox"
-                      id="animationToggle"
-                      defaultChecked
-                    />{" "}
-                    Mostrar animação?
-                  </label>
+              {/* Botão para abrir modal de criação de ficha, apenas para jogadores que não são o mestre */}
+              {!selectedTable.isMaster && (
+                <div className="character-create-section">
+                  <button
+                    className="table-btn"
+                    style={{ marginBottom: 16 }}
+                    onClick={() => setShowCharacterModal(true)}
+                  >
+                    <i className="fas fa-user-plus"></i> Criar Ficha
+                  </button>
                 </div>
-                <div className="dice-controls">
-                  {selectedTable.dice.map((die, index) => (
-                    <button
-                      className="dice-btn"
-                      key={index}
-                      onClick={() => rollDice(die)}
-                    >
-                      1d{die}
-                    </button>
-                  ))}
-                </div>
-                <div className="roll-results-container">
-                  <div id="roll-results" className="roll-results">
-                    (Clique nos botões para rolar)
-                  </div>
-                </div>
-              </div>
+              )}
+              {/* Modal de criação de ficha - agora fora do container para sobrepor toda a tela */}
 
               {showEditModal && (
                 <TableEditModal
@@ -271,6 +259,19 @@ export default function HomePage() {
           )}
         </div>
       </div>
+      {/* Modal de criação de ficha - fora do container para garantir sobreposição */}
+      {showCharacterModal && (
+        <CharacterCreateModal
+          isOpen={showCharacterModal}
+          onClose={() => setShowCharacterModal(false)}
+          systemConfig={selectedTable?.system_variables}
+          onSuccess={(form: any) => {
+            alert("Ficha criada! Veja o console para detalhes.");
+            console.log(form);
+            // Aqui pode adicionar lógica para atualizar dados, etc.
+          }}
+        />
+      )}
     </>
   );
 }

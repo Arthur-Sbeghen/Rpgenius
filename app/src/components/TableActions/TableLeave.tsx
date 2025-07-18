@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import styles from "./tableCreateModal.module.css";
 import { api } from "@/lib/apiRequests";
 import { Toast } from "@/components/Toast/Toast";
 import { Alert } from "@/components/Alert/Alert";
@@ -48,7 +49,7 @@ export function TableLeave({ tableId, onLeft, className }: TableLeaveProps) {
   }
 
   return (
-    <button className={className ?? "leave-btn"} onClick={handleLeave}>
+    <button className={className ?? styles.leaveBtn} onClick={handleLeave}>
       <i className="fas fa-sign-out-alt" style={{ marginRight: 8 }}></i>
       Sair da Mesa
     </button>

@@ -555,3 +555,35 @@
     justify-content: center;
   }
 }
+
+/* Botão sair da mesa */
+.leave-btn {
+  background: #ff6b6b;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 8px;
+}
+.leave-btn:hover {
+  background: #e05a5a;
+}
+
+/* Botão expulsar jogador */
+.player-btn {
+  background: #f7b731;
+  color: #232136;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 4px;
+}
+.player-btn:hover {
+  background: #e1a527;
+}
