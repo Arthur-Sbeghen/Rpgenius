@@ -9,7 +9,8 @@ class Table extends Model {
         'name',
         'player_limit',
         'invite_code',
-        'idMaster'
+        'idMaster',
+        'idSystem'
     ];
 
     public static function generateInviteCode(int $length = 8): string {

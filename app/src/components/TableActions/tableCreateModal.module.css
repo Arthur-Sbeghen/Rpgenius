@@ -1,3 +1,42 @@
+.modalContent {
+  background: #232136;
+  color: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  width: 95vw;
+  max-width: 500px;
+  min-width: 280px;
+  box-shadow: 0 4px 24px #0008;
+  position: relative;
+  margin: 0 12px;
+}
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  overflow-y: auto;
+}
+.closeBtn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  transition: color 0.2s;
+}
+.closeBtn:hover {
+  color: #ff6b6b;
+}
 /* Estilos gerais */
 .tableBtn {
   background: #8a2be2;
@@ -276,4 +315,36 @@
 
 .submitButton:hover {
   background: #7a1ad2;
+}
+
+/* Botão sair da mesa */
+.leave-btn {
+  background: #ff6b6b;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 8px;
+}
+.leave-btn:hover {
+  background: #e05a5a;
+}
+
+/* Botão expulsar jogador */
+.player-btn {
+  background: #f7b731;
+  color: #232136;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 4px;
+}
+.player-btn:hover {
+  background: #e1a527;
 }

@@ -31,6 +31,7 @@ class MesaController extends Controller {
         }
 
         $mesas = $mesas->map(function ($mesa) {
+            $system = System::find($mesa->idSystem);
             return [
                 'id' => $mesa->id,
                 'isMaster' => $mesa->idMaster === auth()->id(),
@@ -38,7 +39,8 @@ class MesaController extends Controller {
                 'player_limit' => $mesa->player_limit,
                 'num_players' => Player::where('idTable', $mesa->id)->count(),
                 'players' => User::whereIn('id', Player::where('idTable', $mesa->id)->pluck('idUser'))->get(['login', 'id']),
-                'system' => System::find($mesa->idSystem)->name,
+                'system' => $system->name,
+                'system_variables' => $system->variables,
                 'dice' => [6, 20, 100],
                 'invite_code' => $mesa->invite_code
             ];
@@ -71,11 +73,6 @@ class MesaController extends Controller {
         //     'name' => 'Ordem Paranormal',
         //     'variables' => json_encode(["a"]),
         //     'description' => 'Do Brasil, explora o oculto e o sobrenatural.',
-        // ]);
-        // System::create([
-        //     'name' => 'Som das Seis',
-        //     'variables' => json_encode(["a"]),
-        //     'description' => 'Um sistema de RPG de mesa brasileiro que mistura fantasia e ficção científica.',
         // ]);
         // System::create([
         //     'name' => 'Call of Cthulhu',

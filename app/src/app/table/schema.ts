@@ -26,4 +26,5 @@ export type Table = {
   system: string;
   invite_code: string;
   isMaster: boolean;
+  system_variables?: any;
 };
