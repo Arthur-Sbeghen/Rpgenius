@@ -27,7 +27,7 @@ export default function Home() {
       </header>
 
       <main className="home-main">
-        <div>
+        
           <div className="apresentacao">
             <p className="f1">Suas campanhas de RPG em um só lugar!</p>
           </div>
@@ -36,7 +36,7 @@ export default function Home() {
             facilitando sua diversão! Solte sua criatividade, reúna seus amigos
             e explore seu mundo com apoio do RPGenius!
           </p>
-        </div>
+        
 
         <div className="funcionalidades">
           <div className="card">
