@@ -1,0 +1,14 @@
+.basic-textarea{
+  padding: .8rem;
+  font-size: 16px;
+  margin-top: .5rem;
+  background-color: #1f1b2e;
+  border: 2.5px solid #382761;
+  border-radius: 10px;
+  outline: none;
+  color: #d2bfff;
+  word-break: break-all;
+}
+.basic-label{
+  color: #ac97de;
+}

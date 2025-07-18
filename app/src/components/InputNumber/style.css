@@ -1,0 +1,17 @@
+.basic-input-number{
+  padding: .8rem;
+  font-size: 16px;
+  margin-top: .5rem;
+  background-color: #1f1b2e;
+  border: 2.5px solid #382761;
+  border-radius: 10px;
+  outline: none;
+  color: #d2bfff;
+}
+.basic-input-number::-webkit-outer-spin-button, .basic-input-number::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.basic-label{
+  color: #ac97de;
+}

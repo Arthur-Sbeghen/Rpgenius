@@ -1,0 +1,10 @@
+.basic-input-radio{
+  width: 1rem;
+  height: 1rem;
+  accent-color: #6736da;
+  margin-top: .5rem;
+  margin-right: .5rem;
+}
+.basic-label{
+  color: #ac97de;
+}
