@@ -1,0 +1,9 @@
+.basic-checkbox{
+  accent-color: #3af321;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+.basic-label{
+  color: #ac97de;
+}
