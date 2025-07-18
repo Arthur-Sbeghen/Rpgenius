@@ -64,7 +64,50 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <h2 className="systems">Nossos sistemas:</h2>
+        <div className="slider">
+  <div className="slide-track">
+    <div className="slide">
+      <img src="https://www.rederpg.com.br/wp/wp-content/uploads/2020/05/DD-Logo.png" height="100" width="250" alt="D&D 5e" />
+    </div>
+    <div className="slide">
+      <img src="https://cdn1.epicgames.com/spt-assets/5e757cef8527449aa2a5f510a5f4abe3/call-of-cthulhu-logo-1nv5w.png?resize=1&w=480&h=270&quality=medium" height="100" width="250" alt="Call of Cthulhu" />
+    </div>
+    <div className="slide">
+      <img src="https://rpgpedia.com/images/home/logo-tormenta20.png" height="100" width="250" alt="Tormenta" />
+    </div>
+    <div className="slide">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/Vampire_The_Masquerade_logo_V5.png" height="100" width="250" alt="Vampire: The Masquerade" />
+    </div>
+    <div className="slide">
+      <img src="https://rpgpedia.com/images/home/logo-ordem-paranormal.png" height="100" width="250" alt="Ordem Paranormal" />
+    </div>
+    <div className="slide">
+      <img src="https://rpgpedia.com/images/home/logo-som-das-seis.png" height="100" width="250" alt="Som das Seis" />
+    </div>
+    <div className="slide">
+      <img src="https://www.rederpg.com.br/wp/wp-content/uploads/2020/05/DD-Logo.png" height="100" width="250" alt="D&D 5e" />
+    </div>
+    <div className="slide">
+      <img src="https://cdn1.epicgames.com/spt-assets/5e757cef8527449aa2a5f510a5f4abe3/call-of-cthulhu-logo-1nv5w.png?resize=1&w=480&h=270&quality=medium" height="100" width="250" alt="Call of Cthulhu" />
+    </div>
+    <div className="slide">
+      <img src="https://rpgpedia.com/images/home/logo-tormenta20.png" height="100" width="250" alt="Tormenta" />
+    </div>
+    <div className="slide">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/Vampire_The_Masquerade_logo_V5.png" height="100" width="250" alt="Vampire: The Masquerade" />
+    </div>
+    <div className="slide">
+      <img src="https://rpgpedia.com/images/home/logo-ordem-paranormal.png" height="100" width="250" alt="Ordem Paranormal" />
+    </div>
+    <div className="slide">
+      <img src="https://rpgpedia.com/images/home/logo-som-das-seis.png" height="100" width="250" alt="Som das Seis" />
+    </div>
+  </div>
+</div>
       </main>
+
+
 
       <footer className="home-footer">
         <p className="home-p">
