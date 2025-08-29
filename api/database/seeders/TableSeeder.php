@@ -2,9 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Table;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Models\User;
+use App\Models\System;
 
 class TableSeeder extends Seeder
 {
@@ -12,8 +15,8 @@ class TableSeeder extends Seeder
     {
         
 
-    $user = \App\Models\User::firstOrFail();
-    $system = \App\Models\System::firstOrCreate(
+    $user = User::firstOrFail();
+    $system = System::firstOrCreate(
         ['name' => 'Som'],
         [
             'variables' => '...',
@@ -21,7 +24,7 @@ class TableSeeder extends Seeder
         ]
     );
 
-    \App\Models\Mesa::firstOrCreate(
+    Table::firstOrCreate(
         ['name' => 'Som das Seis'],
         [
             'idMaster' => $user->id,

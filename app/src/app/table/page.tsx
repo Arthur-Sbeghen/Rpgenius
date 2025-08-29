@@ -80,14 +80,6 @@ export default function TablePage() {
 
   if (!checked || !allowed) return <Loader />;
 
-  const noReleased = () => {
-    Alert.warning("Esta função ainda não foi criada neste protótipo.", {
-      title: "Opa!",
-      confirmButtonText: "Ok!",
-      confirmButtonColor: "#8a2be2",
-    });
-  };
-
   const selectedTable = tables?.find((t) => t.id === selectedTableId);
 
   return (
